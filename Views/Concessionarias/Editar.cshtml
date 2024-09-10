@@ -1,0 +1,20 @@
+﻿@model Intelectah.ViewModel.ConcessionariasViewModel
+
+@{
+    ViewData["Title"] = "Editar Concessionária";
+    ViewData["FormAction"] = "Editar";
+}
+
+<h1>Editar Concessionária</h1>
+
+<form asp-action="@ViewData["FormAction"]" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ConcessionariaID" />
+
+    @Html.Partial("Forms", Model)
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" style="margin-top:10px">Editar</button>
+        <a asp-action="Index" class="btn btn-secondary" style="margin-top:10px">Cancelar</a>
+    </div>
+</form>

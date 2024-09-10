@@ -1,0 +1,9 @@
+﻿@model Intelectah.ViewModel.UsuariosViewModel
+@{
+    ViewData["Title"] = "Editar Usuário";
+    ViewData["FormAction"] = "Editar";
+}
+
+<h2>Editar Usuário</h2>
+
+@await Html.PartialAsync("Forms", Model)

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Intelectah.ViewModel.ConcessionariasViewModel>
+
+
+@{
+    ViewData["Title"] = "Concessionárias";
+}
+
+<div class="text-center">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <a class="btn btn-primary" role="button" asp-controller="Concessionarias" asp-action="Criar">Adicionar nova concessionária</a>
+    </div>
+    <br />
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            <button type="button" class="btn btn-danger btn-sm close-alert" aria-label="Close">X</button>
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+
+    @if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="btn btn-danger btn-sm close-alert" aria-label="Close">X</button>
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <h1 class="display-4">Lista de Concessionárias</h1>
+    <table class="table text-center" id="tabela-concessionarias">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Nome</th>
+                <th scope="col">Endereço Completo</th>
+                <th scope="col">Cidade</th>
+                <th scope="col">Estado</th>
+                <th scope="col">CEP</th>
+                <th scope="col">Telefone</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Capacidade Máxima de Veículos</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var concessionaria in Model)
+            {
+                <tr>
+                    <td></td>
+                    <td>@concessionaria.Nome</td>
+                    <td>@concessionaria.Endereco.EnderecoCompleto</td>
+                    <td>@concessionaria.Endereco.Cidade</td>
+                    <td>@concessionaria.Endereco.Estado</td>
+                    <td>@concessionaria.Endereco.CEP</td>
+                    <td>@concessionaria.Telefone</td>
+                    <td>@concessionaria.Email</td>
+                    <td>@concessionaria.CapacidadeMax</td>
+                    <td>
+                        <a role="button" class="btn btn-primary" asp-route-id="@concessionaria.ConcessionariaID" asp-controller="Concessionarias" asp-action="Editar">Editar</a>
+                    </td>
+                    <td>
+                        <a role="button" class="btn btn-danger" asp-route-id="@concessionaria.ConcessionariaID" asp-controller="Concessionarias" asp-action="ApagarConfirmacao">Apagar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

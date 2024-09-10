@@ -1,0 +1,18 @@
+﻿@model Intelectah.ViewModel.ClientesViewModel
+
+
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Editar Cliente</h1>
+</div>
+
+<form asp-controller="Clientes" asp-action="Editar" method="post">
+    <input type="hidden" asp-for="ClienteID" />
+    @Html.Partial("Forms.cshtml")
+
+    <button type="submit" class="btn btn-primary" style="margin-top:10px">Editar</button>
+    <a class="btn btn-secondary" asp-controller="Clientes" asp-action="Index" role="button" style="margin-top:10px">Voltar</a>
+</form>

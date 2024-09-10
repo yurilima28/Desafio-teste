@@ -1,0 +1,16 @@
+﻿@model Intelectah.ViewModel.FabricantesViewModel
+
+@{
+    ViewData["Title"] = "Adicionar fabricante";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Adiocionar fabricante</h1>
+</div>
+
+<form asp-controller="Fabricantes" asp-action="Criar" method="post">
+    @Html.Partial("Forms.cshtml")
+
+    <button type="submit" class="btn btn-primary" style="margin-top:10px">Criar</button>
+    <a class="btn btn-secondary" asp-controller="Fabricantes" asp-action="Index" role="button" style="margin-top:10px">Voltar</a>
+</form>

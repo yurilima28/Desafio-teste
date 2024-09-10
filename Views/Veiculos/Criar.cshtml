@@ -1,0 +1,18 @@
+﻿@model Intelectah.ViewModel.VeiculosViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Adicionar veículo";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Adicionar veículo</h1>
+</div>
+
+<form asp-controller="Veiculos" asp-action="Criar" method="post">
+    @Html.Partial("Forms")
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" style="margin-top:10px">Salvar</button>
+        <a asp-action="Index" class="btn btn-secondary" style="margin-top:10px">Cancelar</a>
+    </div>
+</form>

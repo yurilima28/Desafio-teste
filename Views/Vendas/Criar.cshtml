@@ -1,0 +1,14 @@
+﻿@model Intelectah.ViewModel.VendasViewModel
+
+@{
+    ViewData["Title"] = "Criar Venda";
+    ViewData["FormAction"] = "Criar";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-controller="Vendas" asp-action="Criar" method="post">
+    @Html.Partial("Forms.cshtml")
+
+    
+</form>

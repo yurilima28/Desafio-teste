@@ -1,0 +1,14 @@
+﻿@model Intelectah.ViewModel.UsuariosViewModel
+
+@{
+    ViewData["Title"] = "Confirmação para apagar o usuário";
+}
+
+<form method="post" asp-controller="Usuarios" asp-action="Apagar">
+    <input type="hidden" name="id" value="@Model.UsuarioId" />
+    <div class="text-center">
+        <h3>Realmente deseja apagar o usuário @Model.NomeUsuario?</h3>
+    </div>
+    <a class="btn btn-primary" role="button" asp-controller="Usuarios" asp-action="Index">Cancelar exclusão</a>
+    <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+</form>

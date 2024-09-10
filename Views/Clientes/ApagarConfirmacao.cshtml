@@ -1,0 +1,15 @@
+﻿@model Intelectah.Models.ClientesModel
+
+@{
+    ViewData["Title"] = "Confirmação de Exclusão de Cliente";
+}
+
+<div class="text-center">
+    <h3>Você realmente deseja apagar o cliente @Model.Nome?</h3>
+</div>
+
+<form method="post" asp-controller="Clientes" asp-action="Apagar">
+    <input type="hidden" name="ClienteID" value="@Model.ClienteID" />
+    <a class="btn btn-primary" role="button" asp-controller="Clientes" asp-action="Index">Cancelar Exclusão</a>
+    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+</form>

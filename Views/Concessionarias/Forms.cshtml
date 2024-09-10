@@ -1,0 +1,86 @@
+﻿@model Intelectah.ViewModel.ConcessionariasViewModel
+
+<div class="form-group col-md-6">
+    <label asp-for="Nome" class="control-label">Concessionária</label>
+    <input asp-for="Nome" class="form-control" placeholder="Nome da concessionária" />
+    <span asp-validation-for="Nome" class="text-danger"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="Endereco.EnderecoCompleto" class="control-label">Endereço</label>
+    <input asp-for="Endereco.EnderecoCompleto" class="form-control" placeholder="Informe a Rua/AV" />
+    <span asp-validation-for="Endereco.EnderecoCompleto" class="text-danger"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="Endereco.Cidade" class="control-label">Cidade</label>
+    <input asp-for="Endereco.Cidade" class="form-control" placeholder="Informe o nome da cidade" />
+    <span asp-validation-for="Endereco.Cidade" class="text-danger"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="Endereco.Estado" class="control-label">Estado</label>
+    <input asp-for="Endereco.Estado" class="form-control" placeholder="Informe o estado" />
+    <span asp-validation-for="Endereco.Estado" class="text-danger"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="Endereco.CEP" class="control-label">CEP</label>
+    <input asp-for="Endereco.CEP" class="form-control" placeholder="Informe o CEP" id="cep" />
+    <span asp-validation-for="Endereco.CEP" class="text-danger" id="cep-error"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="Telefone" class="control-label">Telefone</label>
+    <input asp-for="Telefone" class="form-control" placeholder="Informe o telefone" id="telefone" />
+    <span asp-validation-for="Telefone" class="text-danger" id="telefone-error"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="Email" class="control-label">Email</label>
+    <input asp-for="Email" class="form-control" placeholder="Informe o email" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+
+<div class="form-group col-md-6">
+    <label asp-for="CapacidadeMax" class="control-label">Capacidade máxima de veículos</label>
+    <input asp-for="CapacidadeMax" class="form-control" />
+    <span asp-validation-for="CapacidadeMax" class="text-danger"></span>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Inputmask("99999-999").mask(document.getElementById('cep'));
+            Inputmask("(99) 99999-9999").mask(document.getElementById('telefone'));
+
+            const cepInput = document.getElementById('cep');
+            const telefoneInput = document.getElementById('telefone');
+            const cepError = document.getElementById('cep-error');
+            const telefoneError = document.getElementById('telefone-error');
+
+            cepInput.addEventListener('blur', function () {
+                const cep = cepInput.value.replace(/\D/g, '');
+                if (cep.length !== 8) {
+                    cepError.textContent = 'CEP inválido!';
+                    cepInput.classList.add('is-invalid');
+                } else {
+                    cepError.textContent = '';
+                    cepInput.classList.remove('is-invalid');
+                }
+            });
+
+            telefoneInput.addEventListener('blur', function () {
+                const telefone = telefoneInput.value.replace(/\D/g, '');
+                if (telefone.length < 10) {
+                    telefoneError.textContent = 'Telefone inválido!';
+                    telefoneInput.classList.add('is-invalid');
+                } else {
+                    telefoneError.textContent = '';
+                    telefoneInput.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
+}

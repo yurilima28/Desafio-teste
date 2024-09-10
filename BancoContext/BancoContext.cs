@@ -52,6 +52,10 @@ namespace Intelectah.Dapper
                 .HasForeignKey(v => v.ClienteID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<UsuariosModel>()
+                .Property(u => u.NivelAcesso)
+                .HasConversion<int>();
+
             base.OnModelCreating(modelBuilder);
         }
     }

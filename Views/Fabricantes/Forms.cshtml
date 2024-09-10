@@ -8,7 +8,7 @@
     </div>
     <div class="form-group col-md-6">
         <label asp-for="PaisOrigem" class="control-label">País de Origem</label>
-        @Html.DropDownListFor(model => model.PaisOrigem, Model.OpcaoPaises, "Selecione um país", new { @class = "form-control" })
+        <input asp-for="PaisOrigem" class="form-control" placeholder="Informe o país de origem" />
         @Html.ValidationMessageFor(model => model.PaisOrigem, "", new { @class = "text-danger" })
     </div>
 </div>

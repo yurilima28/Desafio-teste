@@ -1,5 +1,4 @@
 ﻿using Intelectah.Models;
-using System.Collections.Generic;
 
 namespace Intelectah.Repositorio
 {
@@ -15,6 +14,7 @@ namespace Intelectah.Repositorio
         UsuariosModel ObterUsuarioPorId(int usuarioId);
         bool UsuarioExiste(string nomeUsuario);
         bool VerificarNomeUsuarioUnico(string nomeUsuario, int? usuarioId = null);
-        bool VerificarEmailOuLoginExistente(string email, string login);
+        bool EmailExiste(string email, int? usuarioId = null);
+        bool LoginExiste(string login, int? usuarioId = null);
     }
 }

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Confirmação para apagar o usuário";
 }
 
-<form method="post" asp-controller="Usuarios" asp-action="Apagar">
+<form method="post" asp-controller="Usuarios" asp-action="ApagarConfirmado">
     <input type="hidden" name="id" value="@Model.UsuarioId" />
     <div class="text-center">
         <h3>Realmente deseja apagar o usuário @Model.NomeUsuario?</h3>

@@ -1,12 +1,11 @@
-﻿@model IEnumerable<Intelectah.ViewModel.VeiculosViewModel>
+﻿@using Intelectah.Enums
+@model IEnumerable<Intelectah.ViewModel.VeiculosViewModel>
 
 @{
-    ViewData["Title"] = "Veiculos";
+    ViewData["Title"] = "Veículos";
 }
 
-
 <div class="text-center">
-
     <div class="d-grid gap-2 d-md-flex justify-content-md-start">
         <a class="btn btn-primary" role="button" asp-controller="Veiculos" asp-action="Criar">Adicionar novo veículo</a>
     </div>
@@ -15,7 +14,7 @@
     @if (TempData["MensagemSucesso"] != null)
     {
         <div class="alert alert-success" role="alert">
-            <button type="button" class="btn btn-danger btn-sm close-alert" arial-label="Close">X</button>
+            <button type="button" class="btn btn-danger btn-sm close-alert" aria-label="Close">X</button>
             @TempData["MensagemSucesso"]
         </div>
     }
@@ -23,8 +22,7 @@
     @if (TempData["MensagemErro"] != null)
     {
         <div class="alert alert-danger" role="alert">
-
-            <button type="button" class="btn btn-danger btn-sm close-alert" arial-label="Close">X</button>
+            <button type="button" class="btn btn-danger btn-sm close-alert" aria-label="Close">X</button>
             @TempData["MensagemErro"]
         </div>
     }
@@ -44,7 +42,6 @@
                     <th scope="col">Tipo de veículo</th>
                     <th scope="col">Descrição</th>
                     <th scope="col"></th>
-
                 </tr>
             </thead>
             <tbody>
@@ -60,7 +57,9 @@
                             <td>
                                 @veiculo.Fabricantes.FirstOrDefault(f => f.Value == veiculo.FabricanteID.ToString())?.Text
                             </td>
-                            <td>@veiculo.Tipo</td>
+                            <td>
+                                @Enum.GetName(typeof(TipoVeiculo), veiculo.Tipo)
+                            </td>
                             <td>@veiculo.Descricao</td>
                             <td>
                                 <div class="btn-group" role="group">
@@ -75,4 +74,3 @@
         </table>
     </form>
 </div>
-

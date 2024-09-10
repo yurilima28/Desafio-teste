@@ -1,10 +1,11 @@
-﻿using Intelectah.Models;
+﻿using Intelectah.Enums;
+using Intelectah.Models;
 using Intelectah.Repositorio;
 using Intelectah.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
+
 
 namespace Intelectah.Controllers
 {
@@ -21,13 +22,23 @@ namespace Intelectah.Controllers
         {
             try
             {
-                var usuarios = _usuariosRepositorio.ObterTodosUsuarios();
-                return View(usuarios);
+                var usuarios = _usuariosRepositorio.ObterTodosUsuarios(); 
+
+                var viewModel = usuarios.Select(u => new UsuariosModel
+                {
+                    UsuarioID = u.UsuarioID,
+                    NomeUsuario = u.NomeUsuario,
+                    Login = u.Login,
+                    Email = u.Email,
+                    NivelAcesso = (PerfilEnum)u.NivelAcesso
+                }).ToList();
+
+                return View(viewModel);
             }
             catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Ocorreu um erro ao carregar a lista de usuários: {erro.Message}";
-                return View("Index");
+                ViewBag.ErrorMessage = "Ocorreu um erro ao buscar os usuários. Tente novamente mais tarde.";
+                return View("Error");
             }
         }
 
@@ -48,7 +59,16 @@ namespace Intelectah.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(usuario);
+                var viewModel = new UsuariosViewModel
+                {
+                    UsuarioId = usuario.UsuarioID,
+                    NomeUsuario = usuario.NomeUsuario,
+                    Email = usuario.Email,
+                    Login = usuario.Login,
+                    Senha = usuario.Senha
+                };
+
+                return View(viewModel);
             }
             catch (Exception erro)
             {
@@ -56,18 +76,28 @@ namespace Intelectah.Controllers
                 return RedirectToAction("Index");
             }
         }
-        public IActionResult Deletar(int id)
+
+        public IActionResult ApagarConfirmacao(int id)
         {
             try
             {
-                var usuario = _usuariosRepositorio.ListarPorId(id);
+                var usuario = _usuariosRepositorio.ListarPorId(id, incluirExcluidos: false);
                 if (usuario == null)
                 {
                     TempData["MensagemErro"] = "Usuário não encontrado.";
                     return RedirectToAction("Index");
                 }
 
-                return View(usuario);
+                var viewModel = new UsuariosViewModel
+                {
+                    UsuarioId = usuario.UsuarioID,
+                    NomeUsuario = usuario.NomeUsuario,
+                    Email = usuario.Email,
+                    Login = usuario.Login,
+                    NivelAcesso = usuario.NivelAcesso
+                };
+
+                return View(viewModel);
             }
             catch (Exception erro)
             {
@@ -86,18 +116,29 @@ namespace Intelectah.Controllers
 
             try
             {
-                if (_usuariosRepositorio.VerificarEmailOuLoginExistente(viewModel.Email, viewModel.Login))
+                if (_usuariosRepositorio.EmailExiste(viewModel.Email))
                 {
-                    ModelState.AddModelError(string.Empty, "Já existe um usuário com este email ou login.");
+                    ModelState.AddModelError("Email", "Já existe um usuário com este email.");
+                }
+
+                if (_usuariosRepositorio.LoginExiste(viewModel.Login))
+                {
+                    ModelState.AddModelError("Login", "Já existe um usuário com este login.");
+                }
+
+                if (!ModelState.IsValid)
+                {
                     return View(viewModel);
                 }
 
-                UsuariosModel usuarioModel = new UsuariosModel
+                var usuarioModel = new UsuariosModel
                 {
                     NomeUsuario = viewModel.NomeUsuario,
                     Email = viewModel.Email,
                     Login = viewModel.Login,
-                    Senha = viewModel.Senha
+                    Senha = viewModel.Senha,
+                    NivelAcesso = viewModel.NivelAcesso
+                  
                 };
 
                 _usuariosRepositorio.AdicionarUsuario(usuarioModel);
@@ -105,9 +146,9 @@ namespace Intelectah.Controllers
                 TempData["MensagemSucesso"] = "Usuário criado com sucesso!";
                 return RedirectToAction("Index");
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException erro)
             {
-                if (ex.InnerException != null && ex.InnerException is SqlException sqlEx)
+                if (erro.InnerException != null && erro.InnerException is SqlException sqlEx)
                 {
                     if (sqlEx.Message.Contains("Cannot insert the value NULL into column 'Senha'"))
                     {
@@ -123,52 +164,93 @@ namespace Intelectah.Controllers
                     ModelState.AddModelError("", "Ocorreu um erro ao salvar o usuário. Por favor, tente novamente.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception erro)
             {
-                ModelState.AddModelError("", $"Erro inesperado: {ex.Message}");
+                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
             }
+
             return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult Editar(UsuariosModel usuarioModel)
+        public IActionResult Editar(UsuariosViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
             try
             {
+                var usuarioExistente = _usuariosRepositorio.ListarPorId(viewModel.UsuarioId);
+
+                if (usuarioExistente == null)
+                {
+                    ModelState.AddModelError("", "Usuário não encontrado.");
+                    return View(viewModel);
+                }
+
+                if (_usuariosRepositorio.EmailExiste(viewModel.Email, viewModel.UsuarioId))
+                {
+                    ModelState.AddModelError("Email", "Já existe um usuário com este email.");
+                }
+
+                if (_usuariosRepositorio.LoginExiste(viewModel.Login, viewModel.UsuarioId))
+                {
+                    ModelState.AddModelError("Login", "Já existe um usuário com este login.");
+                }
+
                 if (!ModelState.IsValid)
                 {
-                    return View(usuarioModel);
+                    return View(viewModel);
                 }
 
-                if (_usuariosRepositorio.VerificarNomeUsuarioUnico(usuarioModel.NomeUsuario, usuarioModel.UsuarioID))
+                var usuarioModel = new UsuariosModel
                 {
-                    ModelState.AddModelError(string.Empty, "O nome de usuário já está em uso.");
-                    return View(usuarioModel);
-                }
+                    UsuarioID = viewModel.UsuarioId,
+                    NomeUsuario = viewModel.NomeUsuario,
+                    Email = viewModel.Email,
+                    Login = viewModel.Login,
+                    Senha = viewModel.Senha,
+                    NivelAcesso = viewModel.NivelAcesso
+                };
 
                 _usuariosRepositorio.AtualizarUsuario(usuarioModel);
+
                 TempData["MensagemSucesso"] = "Usuário atualizado com sucesso!";
                 return RedirectToAction("Index");
             }
+            catch (DbUpdateException erro)
+            {
+                if (erro.InnerException != null && erro.InnerException is SqlException sqlEx)
+                {
+                    if (sqlEx.Message.Contains("Cannot insert the value NULL into column 'Senha'"))
+                    {
+                        ModelState.AddModelError("", "O campo Senha é obrigatório.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Ocorreu um erro ao atualizar o usuário. Por favor, tente novamente.");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro ao atualizar o usuário. Por favor, tente novamente.");
+                }
+            }
             catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Erro ao atualizar usuário: {erro.Message}";
-                return View(usuarioModel);
+                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
             }
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult ApagarConfirmacao(int id)
+        public IActionResult ApagarConfirmado(int id)
         {
             try
             {
-                var usuario = _usuariosRepositorio.ListarPorId(id);
-                if (usuario == null)
-                {
-                    TempData["MensagemErro"] = "Usuário não encontrado.";
-                    return RedirectToAction("Index");
-                }
-
                 if (_usuariosRepositorio.ApagarUsuario(id))
                 {
                     TempData["MensagemSucesso"] = "Usuário deletado com sucesso!";
@@ -177,6 +259,7 @@ namespace Intelectah.Controllers
                 {
                     TempData["MensagemErro"] = "Erro ao deletar usuário.";
                 }
+
                 return RedirectToAction("Index");
             }
             catch (Exception erro)

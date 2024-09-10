@@ -151,7 +151,10 @@ namespace Intelectah.Controllers
             {
                 ModelState.AddModelError(nameof(viewModel.Nome), "O nome da concessionária não pode exceder 100 caracteres.");
             }
-
+            if (!_concessionariasRepositorio.VerificarNomeConcessionariaUnico(viewModel.Nome, viewModel.ConcessionariaID))
+            {
+                ModelState.AddModelError(nameof(viewModel.Nome), "O nome da concessionária já existe.");
+            }
             if (ModelState.IsValid)
             {
              

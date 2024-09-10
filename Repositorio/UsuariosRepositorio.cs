@@ -1,8 +1,6 @@
 ﻿using Intelectah.Dapper;
 using Intelectah.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Intelectah.Repositorio
 {
@@ -98,9 +96,14 @@ namespace Intelectah.Repositorio
             return !_bancoContext.Usuarios.Any(u => u.NomeUsuario == nomeUsuario && u.UsuarioID != usuarioId && !u.IsDeleted);
         }
 
-        public bool VerificarEmailOuLoginExistente(string email, string login)
+        public bool EmailExiste(string email, int? usuarioId = null)
         {
-            return _bancoContext.Usuarios.Any(u => u.Email == email || u.Login == login);
+            return _bancoContext.Usuarios.Any(u => u.Email == email && u.UsuarioID != usuarioId);
+        }
+
+        public bool LoginExiste(string login, int? usuarioId = null)
+        {
+            return _bancoContext.Usuarios.Any(u => u.Login == login && u.UsuarioID != usuarioId);
         }
     }
 }

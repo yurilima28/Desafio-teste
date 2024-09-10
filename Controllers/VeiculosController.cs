@@ -1,4 +1,5 @@
-﻿using Intelectah.Models;
+﻿using Intelectah.Enums;
+using Intelectah.Models;
 using Intelectah.Repositorio;
 using Intelectah.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +23,30 @@ namespace Intelectah.Controllers
             try
             {
                 var veiculos = _veiculosRepositorio.BuscarTodos();
+                var fabricantes = _fabricantesRepositorio.BuscarTodos();
+
                 var viewModel = veiculos.Select(v => new VeiculosViewModel
                 {
                     VeiculoID = v.VeiculoID,
                     ModeloVeiculo = v.ModeloVeiculo,
                     FabricanteID = v.FabricanteID,
                     AnoFabricacao = v.AnoFabricacao,
-
+                    ValorVeiculo = v.ValorVeiculo,
+                    Tipo = v.Tipo,
+                    Descricao = v.Descricao,
+                    Fabricantes = fabricantes.Select(f => new SelectListItem
+                    {
+                        Value = f.FabricanteID.ToString(),
+                        Text = f.NomeFabricante
+                    }).ToList(),
+                    TiposVeiculos = Enum.GetValues(typeof(TipoVeiculo)).Cast<TipoVeiculo>()
+                 .Select(t => new SelectListItem
+                 {
+                     Value = t.ToString(),
+                     Text = t.ToString()
+                 }).ToList()
                 }).ToList();
+
                 return View(viewModel);
             }
             catch (Exception erro)
@@ -49,9 +66,16 @@ namespace Intelectah.Controllers
                 {
                     Value = f.FabricanteID.ToString(),
                     Text = f.NomeFabricante
+                }).ToList(),
+
+                TiposVeiculos = Enum.GetValues(typeof(TipoVeiculo))
+                .Cast<TipoVeiculo>()
+                .Select(t => new SelectListItem
+                {
+                    Value = ((int)t).ToString(),
+                    Text = t.ToString()
                 }).ToList()
             };
-
             return View(viewModel);
         }
 
@@ -65,14 +89,31 @@ namespace Intelectah.Controllers
                     return NotFound();
                 }
 
+                var fabricantes = _fabricantesRepositorio.BuscarTodos();
+
                 var viewModel = new VeiculosViewModel
                 {
                     VeiculoID = veiculo.VeiculoID,
                     ModeloVeiculo = veiculo.ModeloVeiculo,
                     FabricanteID = veiculo.FabricanteID,
                     AnoFabricacao = veiculo.AnoFabricacao,
+                    Tipo = veiculo.Tipo,
 
+                    Fabricantes = fabricantes.Select(f => new SelectListItem
+                    {
+                        Value = f.FabricanteID.ToString(),
+                        Text = f.NomeFabricante
+                    }).ToList(),
+
+                    TiposVeiculos = Enum.GetValues(typeof(TipoVeiculo))
+                        .Cast<TipoVeiculo>()
+                        .Select(t => new SelectListItem
+                        {
+                            Value = ((int)t).ToString(),
+                            Text = t.ToString()
+                        }).ToList()
                 };
+
                 return View(viewModel);
             }
             catch (Exception erro)
@@ -150,6 +191,9 @@ namespace Intelectah.Controllers
                         ModeloVeiculo = viewModel.ModeloVeiculo,
                         FabricanteID = viewModel.FabricanteID,
                         AnoFabricacao = viewModel.AnoFabricacao,
+                        ValorVeiculo = viewModel.ValorVeiculo,
+                        Tipo = viewModel.Tipo,
+                        Descricao = viewModel.Descricao,
 
                     };
 
@@ -184,7 +228,8 @@ namespace Intelectah.Controllers
                         VeiculoID = viewModel.VeiculoID,
                         ModeloVeiculo = viewModel.ModeloVeiculo,
                         FabricanteID = viewModel.FabricanteID,
-                        AnoFabricacao = viewModel.AnoFabricacao
+                        AnoFabricacao = viewModel.AnoFabricacao,
+                        Descricao = viewModel.Descricao,
                     };
 
                     _veiculosRepositorio.Atualizar(veiculo);

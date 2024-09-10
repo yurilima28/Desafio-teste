@@ -89,13 +89,14 @@ namespace Intelectah.Repositorio
 
         public VendasModel ObterPorProtocolo(string protocoloVenda)
         {
-            return _bancoContext.Vendas
-                .FirstOrDefault(v => v.ProtocoloVenda == protocoloVenda && !v.IsDeleted);
+            return _bancoContext.Vendas.FirstOrDefault(v => v.ProtocoloVenda == protocoloVenda && !v.IsDeleted);
         }
 
         public bool VerificarProtocoloUnico(string protocoloVenda)
         {
-            return !_bancoContext.Vendas.Any(v => v.ProtocoloVenda == protocoloVenda && !v.IsDeleted);
+            return !_bancoContext.Vendas.Any(v => v.ProtocoloVenda == protocoloVenda);
         }
+
+      
     }
 }

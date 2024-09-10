@@ -9,7 +9,8 @@
 </div>
 
 <form method="post" asp-controller="Clientes" asp-action="Apagar">
-    <input type="hidden" name="ClienteID" value="@Model.ClienteID" />
+    <input type="hidden" name="id" value="@Model.ClienteID" />
     <a class="btn btn-primary" role="button" asp-controller="Clientes" asp-action="Index">Cancelar Exclusão</a>
     <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
 </form>
+

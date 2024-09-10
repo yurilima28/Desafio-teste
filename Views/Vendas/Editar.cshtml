@@ -2,9 +2,15 @@
 
 @{
     ViewData["Title"] = "Editar Venda";
-    ViewData["FormAction"] = "Editar";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-@await Html.PartialAsync("Forms", Model)
+<form asp-action="Editar" method="post">
+    @Html.Partial("Forms", Model)
+
+    <button type="submit" class="btn btn-primary" style="margin-top:10px">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary" style="margin-top:10px">Cancelar</a>
+</form>
+
+

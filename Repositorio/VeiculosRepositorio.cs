@@ -75,10 +75,8 @@ namespace Intelectah.Repositorio
 
         public List<VeiculosModel> BuscarPorFabricante(int fabricanteId)
         {
-            return _bancoContext.Veiculos
-                .Include(v => v.Fabricante)
-                .Where(v => v.FabricanteID == fabricanteId && !v.IsDeleted)
-                .ToList();
+            return _bancoContext.Veiculos.Where(v => v.FabricanteID == fabricanteId).ToList();
+
         }
 
         public bool VerificarSeVeiculoVendido(int veiculoId)

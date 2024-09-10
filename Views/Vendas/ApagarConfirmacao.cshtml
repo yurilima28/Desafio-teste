@@ -1,17 +1,15 @@
-﻿@model Intelectah.ViewModel.VendasViewModel
+﻿@model Intelectah.Models.VendasModel
 
 @{
-    ViewData["Title"] = "Confirmar Exclusão";
+    ViewData["Title"] = "Confirmação de Exclusão de Venda";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<p>Você tem certeza de que deseja excluir a venda com ID @Model.VendaId?</p>
-
-<div>
-    <form asp-action="Apagar" method="post">
-        <input type="hidden" asp-for="VendaId" />
-        <button type="submit" class="btn btn-danger">Excluir</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-    </form>
+<div class="text-center">
+    <h3>Você realmente deseja apagar a venda com ID @Model.VendaId?</h3>
 </div>
+
+<form method="post" asp-controller="Vendas" asp-action="ApagarConfirmacao">
+    <input type="hidden" name="id" value="@Model.VendaId" />
+    <a class="btn btn-primary" role="button" asp-controller="Vendas" asp-action="Index">Cancelar Exclusão</a>
+    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+</form>

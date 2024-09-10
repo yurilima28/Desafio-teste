@@ -2,13 +2,14 @@
 
 @{
     ViewData["Title"] = "Criar Venda";
-    ViewData["FormAction"] = "Criar";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-controller="Vendas" asp-action="Criar" method="post">
-    @Html.Partial("Forms.cshtml")
+<form asp-action="Criar" method="post">
+    @Html.Partial("Forms", Model)
 
-    
+    <button type="submit" class="btn btn-primary" style="margin-top:10px">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary" style="margin-top:10px">Cancelar</a>
 </form>
+

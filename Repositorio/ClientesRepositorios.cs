@@ -1,8 +1,6 @@
 ﻿using Intelectah.Dapper;
 using Intelectah.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace Intelectah.Repositorio
 {
@@ -79,20 +77,12 @@ namespace Intelectah.Repositorio
 
         public ClientesModel ObterPorNome(string nomeCliente)
         {
-            return _bancoContext.Clientes
-                .FirstOrDefault(c => c.Nome == nomeCliente && !c.IsDeleted);
+            return _bancoContext.Clientes.FirstOrDefault(c => c.Nome == nomeCliente && !c.IsDeleted);
         }
 
-        public bool VerificarNomeClienteUnico(string nomeCliente, int? clienteID = null)
+        public bool CPFExiste(string cpf, int? clienteId = null)
         {
-            return !_bancoContext.Clientes
-                .Any(c => c.Nome == nomeCliente && c.ClienteID != clienteID && !c.IsDeleted);
-        }
-
-        public bool VerificarCpfUnico(string cpf, int? clienteID = null)
-        {
-            return !_bancoContext.Clientes
-                .Any(c => c.CPF == cpf && c.ClienteID != clienteID && !c.IsDeleted);
+            return _bancoContext.Clientes.Any(c => c.CPF == cpf && c.ClienteID != clienteId);
         }
     }
 }

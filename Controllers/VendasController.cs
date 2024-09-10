@@ -1,195 +1,249 @@
 ﻿using Intelectah.Models;
 using Intelectah.Repositorio;
+using Intelectah.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Intelectah.Controllers
 {
     public class VendasController : Controller
     {
         private readonly IVendasRepositorio _vendasRepositorio;
+        private readonly IClientesRepositorio _clientesRepositorio;
+        private readonly IUsuariosRepositorio _usuariosRepositorio;
+        private readonly IConcessionariasRepositorio _concessionariasRepositorio;
+        private readonly IFabricantesRepositorio _fabricantesRepositorio;
+        private readonly IVeiculosRepositorio _veiculosRepositorio;
 
-        public VendasController(IVendasRepositorio vendasRepositorio)
+        public VendasController(
+            IVendasRepositorio vendasRepositorio,
+            IClientesRepositorio clientesRepositorio,
+            IUsuariosRepositorio usuariosRepositorio,
+            IConcessionariasRepositorio concessionariasRepositorio,
+            IFabricantesRepositorio fabricantesRepositorio,
+            IVeiculosRepositorio veiculosRepositorio)
         {
             _vendasRepositorio = vendasRepositorio;
+            _clientesRepositorio = clientesRepositorio;
+            _usuariosRepositorio = usuariosRepositorio;
+            _concessionariasRepositorio = concessionariasRepositorio;
+            _fabricantesRepositorio = fabricantesRepositorio;
+            _veiculosRepositorio = veiculosRepositorio;
         }
 
         public IActionResult Index()
         {
-            try
+            var vendas = _vendasRepositorio.BuscarTodos();
+            var vendasViewModel = vendas.Select(v => new VendasViewModel
             {
-                var vendas = _vendasRepositorio.BuscarTodos();
-                return View(vendas);
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Ocorreu um erro ao carregar a lista de vendas: {erro.Message}";
-                return View("Error");
-            }
-        }
+                VendaId = v.VendaId,
+                ClienteID = v.ClienteID,
+                DataVenda = v.DataVenda,
+                ValorTotal = v.ValorTotal,
+                UsuarioID = v.UsuarioID,
+                ConcessionariaID = v.ConcessionariaID,
+                FabricanteID = v.FabricanteID,
+                VeiculoID = v.VeiculoID
+            });
 
-        public IActionResult Detalhes(int id)
-        {
-            try
-            {
-                var venda = _vendasRepositorio.ListarPorId(id);
-                if (venda == null)
-                {
-                    TempData["MensagemErro"] = "Venda não encontrada.";
-                    return RedirectToAction("Index");
-                }
-
-                return View(venda);
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Erro ao buscar venda: {erro.Message}";
-                return RedirectToAction("Index");
-            }
+            return View(vendasViewModel);
         }
 
         public IActionResult Criar()
         {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Criar(VendasModel vendaModel)
-        {
             try
             {
-                if (!ModelState.IsValid)
+                var viewModel = new VendasViewModel
                 {
-                    return View(vendaModel);
-                }
-
-                _vendasRepositorio.Adicionar(vendaModel);
-                TempData["MensagemSucesso"] = "Venda criada com sucesso!";
-                return RedirectToAction("Index");
+                    ProtocoloVenda = GerarProtocoloVenda()
+                };
+                PrepararDadosDropdowns(viewModel);
+                return View(viewModel);
             }
-            catch (Exception erro)
+            catch (Exception ex)
             {
-                TempData["MensagemErro"] = $"Erro ao criar venda: {erro.Message}";
-                return View(vendaModel);
+                ViewBag.ErrorMessage = $"Erro ao carregar a página: {ex.Message}";
+                return View("Error");
             }
         }
 
         public IActionResult Editar(int id)
         {
-            try
+            var venda = _vendasRepositorio.ListarPorId(id);
+            if (venda == null)
             {
-                var venda = _vendasRepositorio.ListarPorId(id);
-                if (venda == null)
-                {
-                    TempData["MensagemErro"] = "Venda não encontrada.";
-                    return RedirectToAction("Index");
-                }
-
-                return View(venda);
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Erro ao buscar venda: {erro.Message}";
+                TempData["MensagemErro"] = "Venda não encontrada.";
                 return RedirectToAction("Index");
             }
+
+            var vendaViewModel = MapearParaViewModel(venda);
+            PrepararDadosDropdowns(vendaViewModel, venda.FabricanteID); 
+            return View(vendaViewModel);
+        }
+
+        public IActionResult Apagar(int id)
+        {
+            var venda = _vendasRepositorio.ListarPorId(id, incluirExcluidos: true);
+            if (venda == null)
+            {
+                TempData["MensagemErro"] = "Venda não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            return View(venda);
         }
 
         [HttpPost]
-        public IActionResult Editar(VendasModel vendaModel)
+        public IActionResult Criar(VendasViewModel vendasViewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    return View(vendaModel);
-                }
-
-                _vendasRepositorio.Atualizar(vendaModel);
-                TempData["MensagemSucesso"] = "Venda atualizada com sucesso!";
-                return RedirectToAction("Index");
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Erro ao atualizar venda: {erro.Message}";
-                return View(vendaModel);
-            }
-        }
-
-        public IActionResult Deletar(int id)
-        {
-            try
-            {
-                var venda = _vendasRepositorio.ListarPorId(id);
-                if (venda == null)
-                {
-                    TempData["MensagemErro"] = "Venda não encontrada.";
+                    vendasViewModel.ProtocoloVenda = GerarProtocoloVenda();
+                    if (vendasViewModel.ProtocoloVenda == null)
+                    {
+                        throw new Exception("Não foi possível gerar o protocolo de venda.");
+                    }
+                    var vendaModel = MapearParaModel(vendasViewModel); 
+                    _vendasRepositorio.Adicionar(vendaModel);
                     return RedirectToAction("Index");
                 }
+                catch (Exception ex)
+                {
+                    ViewBag.ErrorMessage = $"Erro ao salvar a venda: {ex.Message}";
+                    PrepararDadosDropdowns(vendasViewModel);
+                    return View(vendasViewModel);
+                }
+            }
 
-                return View(venda);
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Erro ao buscar venda: {erro.Message}";
-                return RedirectToAction("Index");
-            }
+            PrepararDadosDropdowns(vendasViewModel);
+            return View(vendasViewModel);
         }
 
         [HttpPost]
-        public IActionResult DeletarConfirmado(int id)
+        public IActionResult Editar(VendasViewModel vendasViewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var venda = _vendasRepositorio.ListarPorId(id);
-                if (venda == null)
+                try
                 {
-                    TempData["MensagemErro"] = "Venda não encontrada.";
+                    var vendaModel = MapearParaModel(vendasViewModel); 
+                    _vendasRepositorio.Atualizar(vendaModel);
+                    TempData["MensagemSucesso"] = "Venda atualizada com sucesso!";
                     return RedirectToAction("Index");
                 }
-
-                if (_vendasRepositorio.Apagar(id))
+                catch (Exception erro)
                 {
-                    TempData["MensagemSucesso"] = "Venda deletada com sucesso!";
+                    TempData["MensagemErro"] = "Ocorreu um erro ao atualizar a venda. Por favor, tente novamente.";
                 }
-                else
-                {
-                    TempData["MensagemErro"] = "Erro ao deletar venda.";
-                }
+            }
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Erro ao deletar venda: {erro.Message}";
-                return RedirectToAction("Index");
-            }
+            PrepararDadosDropdowns(vendasViewModel); 
+
+            return View(vendasViewModel);
         }
 
-        public IActionResult Restaurar(int id)
+        [HttpPost]
+        public IActionResult ApagarConfirmacao(int id)
         {
             try
             {
                 var venda = _vendasRepositorio.ListarPorId(id, incluirExcluidos: true);
-                if (venda == null || !venda.IsDeleted)
+                if (venda == null)
                 {
-                    TempData["MensagemErro"] = "Venda não encontrada ou não está excluída.";
+                    TempData["MensagemErro"] = "Venda não encontrada.";
                     return RedirectToAction("Index");
                 }
 
-                if (_vendasRepositorio.Restaurar(id))
-                {
-                    TempData["MensagemSucesso"] = "Venda restaurada com sucesso!";
-                }
-                else
-                {
-                    TempData["MensagemErro"] = "Erro ao restaurar venda.";
-                }
-
+                _vendasRepositorio.Apagar(id);
+                TempData["MensagemSucesso"] = "Venda excluída com sucesso!";
                 return RedirectToAction("Index");
             }
             catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Erro ao restaurar venda: {erro.Message}";
+                TempData["MensagemErro"] = "Ocorreu um erro ao excluir a venda. Por favor, tente novamente.";
                 return RedirectToAction("Index");
+            }
+        }
+        [Route("Vendas/BuscarPorFabricante")]
+        public IActionResult BuscarPorFabricante(int fabricanteId)
+        {
+            var veiculos = _veiculosRepositorio.BuscarPorFabricante(fabricanteId);
+            var selectList = ObterSelectList(veiculos, v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
+            return Json(selectList);
+        }
+
+        private void PrepararDadosDropdowns(VendasViewModel vendasViewModel, int? fabricanteId = null)
+        {
+            ViewBag.Clientes = ObterSelectList(_clientesRepositorio.BuscarTodos(), c => c.ClienteID.ToString(), c => c.Nome);
+            ViewBag.Concessionarias = ObterSelectList(_concessionariasRepositorio.BuscarTodos(), co => co.ConcessionariaID.ToString(), co => co.Nome);
+            ViewBag.Fabricantes = ObterSelectList(_fabricantesRepositorio.BuscarTodos(), f => f.FabricanteID.ToString(), f => f.NomeFabricante);
+            ViewBag.Usuarios = ObterSelectList(_usuariosRepositorio.ObterTodosUsuarios(), u => u.UsuarioID.ToString(), u => u.NomeUsuario);
+            ViewBag.Modelos = ObterSelectList(_veiculosRepositorio.BuscarTodos(), v => v.ModeloVeiculo.ToString(), v => v.ModeloVeiculo);
+
+            if (fabricanteId.HasValue)
+            {
+                ViewBag.Modelos = ObterSelectList(_veiculosRepositorio.BuscarPorFabricante(fabricanteId.Value), v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
+            }
+            else
+            {
+                ViewBag.Modelos = ObterSelectList(Enumerable.Empty<VeiculosModel>(), v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
+            }
+        }
+
+        private IEnumerable<SelectListItem> ObterSelectList<T>(IEnumerable<T> items, Func<T, string> valueSelector, Func<T, string> textSelector)
+        {
+            return items.Select(item => new SelectListItem
+            {
+                Value = valueSelector(item),
+                Text = textSelector(item)
+            }).ToList();
+        }
+
+        private VendasViewModel MapearParaViewModel(VendasModel venda)
+        {
+            return new VendasViewModel
+            {
+                VendaId = venda.VendaId,
+                ClienteID = venda.ClienteID,
+                DataVenda = venda.DataVenda,
+                ValorTotal = venda.ValorTotal,
+                UsuarioID = venda.UsuarioID,
+                ConcessionariaID = venda.ConcessionariaID,
+                FabricanteID = venda.FabricanteID,
+                VeiculoID = venda.VeiculoID,
+                ProtocoloVenda = venda.ProtocoloVenda,
+            };
+        }
+
+        private VendasModel MapearParaModel(VendasViewModel viewModel)
+        {
+            return new VendasModel
+            {
+                VendaId = viewModel.VendaId,
+                ClienteID = viewModel.ClienteID,
+                DataVenda = viewModel.DataVenda,
+                ValorTotal = viewModel.ValorTotal,
+                UsuarioID = viewModel.UsuarioID,
+                ConcessionariaID = viewModel.ConcessionariaID,
+                FabricanteID = viewModel.FabricanteID,
+                VeiculoID = viewModel.VeiculoID,
+                ProtocoloVenda = viewModel.ProtocoloVenda,
+            };
+        }
+
+        private string GerarProtocoloVenda()
+        {
+            try
+            {
+                var protocolo = DateTime.Now.ToString("yyyyMMddHHmmss");
+                return protocolo;
+            }
+            catch (Exception erro)
+            {
+                TempData["MensagemErro"] = "Ocorreu um erro ao gerar o protocolo de venda. Por favor, tente novamente.";
+                return null;
             }
         }
     }

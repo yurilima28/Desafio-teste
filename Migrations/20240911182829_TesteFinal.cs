@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Desafio_teste.Migrations
 {
-    public partial class CriandoTabelas : Migration
+    public partial class TesteFinal : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

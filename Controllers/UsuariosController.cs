@@ -22,7 +22,7 @@ namespace Intelectah.Controllers
         {
             try
             {
-                var usuarios = _usuariosRepositorio.ObterTodosUsuarios(); 
+                var usuarios = _usuariosRepositorio.ObterTodosUsuarios();
 
                 var viewModel = usuarios.Select(u => new UsuariosModel
                 {
@@ -138,7 +138,7 @@ namespace Intelectah.Controllers
                     Login = viewModel.Login,
                     Senha = viewModel.Senha,
                     NivelAcesso = viewModel.NivelAcesso
-                  
+
                 };
 
                 _usuariosRepositorio.AdicionarUsuario(usuarioModel);
@@ -175,75 +175,50 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Editar(UsuariosViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
 
             try
             {
                 var usuarioExistente = _usuariosRepositorio.ListarPorId(viewModel.UsuarioId);
-
                 if (usuarioExistente == null)
                 {
-                    ModelState.AddModelError("", "Usuário não encontrado.");
-                    return View(viewModel);
+                    TempData["MensagemErro"] = "Usuário não encontrado.";
+                    return RedirectToAction("Index");
                 }
 
-                if (_usuariosRepositorio.EmailExiste(viewModel.Email, viewModel.UsuarioId))
+                bool emailEmUso = _usuariosRepositorio.EmailExiste(viewModel.Email, viewModel.UsuarioId);
+                bool loginEmUso = _usuariosRepositorio.LoginExiste(viewModel.Login, viewModel.UsuarioId);
+
+                if (emailEmUso)
                 {
                     ModelState.AddModelError("Email", "Já existe um usuário com este email.");
                 }
 
-                if (_usuariosRepositorio.LoginExiste(viewModel.Login, viewModel.UsuarioId))
+                if (loginEmUso)
                 {
                     ModelState.AddModelError("Login", "Já existe um usuário com este login.");
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return View(viewModel);
+                    return View(viewModel); 
                 }
 
-                var usuarioModel = new UsuariosModel
-                {
-                    UsuarioID = viewModel.UsuarioId,
-                    NomeUsuario = viewModel.NomeUsuario,
-                    Email = viewModel.Email,
-                    Login = viewModel.Login,
-                    Senha = viewModel.Senha,
-                    NivelAcesso = viewModel.NivelAcesso
-                };
+                usuarioExistente.NomeUsuario = viewModel.NomeUsuario;
+                usuarioExistente.Email = viewModel.Email;
+                usuarioExistente.Login = viewModel.Login;
+                usuarioExistente.Senha = viewModel.Senha;
+                usuarioExistente.NivelAcesso = viewModel.NivelAcesso;
 
-                _usuariosRepositorio.AtualizarUsuario(usuarioModel);
+                _usuariosRepositorio.AtualizarUsuario(usuarioExistente);
 
                 TempData["MensagemSucesso"] = "Usuário atualizado com sucesso!";
                 return RedirectToAction("Index");
             }
-            catch (DbUpdateException erro)
-            {
-                if (erro.InnerException != null && erro.InnerException is SqlException sqlEx)
-                {
-                    if (sqlEx.Message.Contains("Cannot insert the value NULL into column 'Senha'"))
-                    {
-                        ModelState.AddModelError("", "O campo Senha é obrigatório.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Ocorreu um erro ao atualizar o usuário. Por favor, tente novamente.");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Ocorreu um erro ao atualizar o usuário. Por favor, tente novamente.");
-                }
-            }
             catch (Exception erro)
             {
-                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
+                TempData["MensagemErro"] = $"Erro ao editar usuário: {erro.Message}";
+                return View(viewModel); 
             }
-
-            return View(viewModel);
         }
 
         [HttpPost]

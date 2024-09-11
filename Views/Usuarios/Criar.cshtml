@@ -1,10 +1,16 @@
 ﻿@model Intelectah.ViewModel.UsuariosViewModel
 
 @{
-    ViewData["Title"] = "Criar Usuário";
-    ViewData["FormAction"] = "Criar";
+    ViewData["Title"] = "Adicionar ususario";
 }
 
-<h2>Criar Usuário</h2>
+<div class="text-center">
+    <h1 class="display-4">Adicionar usuário</h1>
+</div>
 
-@await Html.PartialAsync("Forms", Model)
+<form asp-controller="Usuarios" asp-action="Criar" method="post">
+    @Html.Partial("Forms.cshtml")
+
+    <button type="submit" class="btn btn-primary" style="margin-top:10px">Criar</button>
+    <a class="btn btn-secondary" asp-controller="Usuarios" asp-action="Index" role="button" style="margin-top:10px">Voltar</a>
+</form>

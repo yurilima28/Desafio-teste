@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Desafio_teste.Migrations
 {
     [DbContext(typeof(BancoContext))]
-    [Migration("20240910172251_teste1")]
-    partial class teste1
+    [Migration("20240911182829_TesteFinal")]
+    partial class TesteFinal
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

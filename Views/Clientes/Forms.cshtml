@@ -24,31 +24,3 @@
     <span asp-validation-for="Telefone" class="text-danger"></span>
 </div>
 
-@section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            Inputmask("999.999.999-99").mask(document.getElementById('cpf'));
-
-            const cpfInput = document.getElementById('cpf');
-            const cpfError = document.getElementById('cpf-error');
-
-            cpfInput.addEventListener('blur', function () {
-                const cpf = cpfInput.value.replace(/\D/g, '');
-                if (!validarCPF(cpf)) {
-                    cpfError.textContent = 'CPF inválido!';
-                    cpfInput.classList.add('is-invalid');
-                } else {
-                    cpfError.textContent = '';
-                    cpfInput.classList.remove('is-invalid');
-                }
-            });
-
-            function validarCPF(cpf) {
-
-                if (cpf.length !== 11) return false;
-                return true;
-            }
-        });
-    </script>
-}

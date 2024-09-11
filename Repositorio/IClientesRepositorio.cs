@@ -12,6 +12,6 @@ namespace Intelectah.Repositorio
         bool Apagar(int id);
         bool Restaurar(int id); 
         ClientesModel ObterPorNome(string nomeCliente);
-        bool CPFExiste(string cpf, int? clienteID = null);
+        bool CPFExiste(string cpf, int? clienteId = null );
     }
 }

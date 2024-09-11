@@ -95,23 +95,27 @@ namespace Intelectah.Controllers
                 {
                     VeiculoID = veiculo.VeiculoID,
                     ModeloVeiculo = veiculo.ModeloVeiculo,
-                    FabricanteID = veiculo.FabricanteID,
+                    FabricanteID = veiculo.FabricanteID, 
                     AnoFabricacao = veiculo.AnoFabricacao,
+                    ValorVeiculo = veiculo.ValorVeiculo,
                     Tipo = veiculo.Tipo,
+                    Descricao = veiculo.Descricao,
 
                     Fabricantes = fabricantes.Select(f => new SelectListItem
                     {
                         Value = f.FabricanteID.ToString(),
-                        Text = f.NomeFabricante
+                        Text = f.NomeFabricante,
+                        Selected = f.FabricanteID == veiculo.FabricanteID 
                     }).ToList(),
 
                     TiposVeiculos = Enum.GetValues(typeof(TipoVeiculo))
-                        .Cast<TipoVeiculo>()
-                        .Select(t => new SelectListItem
-                        {
-                            Value = ((int)t).ToString(),
-                            Text = t.ToString()
-                        }).ToList()
+                .Cast<TipoVeiculo>()
+                .Select(t => new SelectListItem
+                {
+                    Value = ((int)t).ToString(),
+                    Text = t.ToString(),
+                    Selected = t == veiculo.Tipo 
+                }).ToList()
                 };
 
                 return View(viewModel);
@@ -206,7 +210,9 @@ namespace Intelectah.Controllers
                         VeiculoID = viewModel.VeiculoID,
                         ModeloVeiculo = viewModel.ModeloVeiculo,
                         FabricanteID = viewModel.FabricanteID,
+                        ValorVeiculo = viewModel.ValorVeiculo,
                         AnoFabricacao = viewModel.AnoFabricacao,
+                        Tipo = viewModel.Tipo,
                         Descricao = viewModel.Descricao,
                     };
 

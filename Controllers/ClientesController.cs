@@ -137,10 +137,9 @@ namespace Intelectah.Controllers
                     ModelState.AddModelError(nameof(viewModel.CPF), "O CPF informado é inválido.");
                 }
 
-                if (_clientesRepositorio.CPFExiste(viewModel.CPF))
+                if (_clientesRepositorio.CPFExiste(viewModel.CPF, viewModel.ClienteID))
                 {
-                    ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
-                    return View(viewModel);
+                    ModelState.AddModelError(nameof(viewModel.CPF), "Já existe um cliente com este CPF.");
                 }
 
                 if (ModelState.IsValid)
@@ -153,21 +152,17 @@ namespace Intelectah.Controllers
                         Telefone = viewModel.Telefone,
                         Email = viewModel.Email
                     };
-
                     _clientesRepositorio.Atualizar(cliente);
                     TempData["MensagemSucesso"] = "Cliente atualizado com sucesso.";
                     return RedirectToAction("Index");
                 }
-
                 return View(viewModel);
-
             }
             catch (Exception erro)
             {
                 ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
             }
             return View(viewModel);
-
         }
 
         [HttpPost]

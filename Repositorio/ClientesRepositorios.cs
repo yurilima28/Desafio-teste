@@ -82,7 +82,7 @@ namespace Intelectah.Repositorio
 
         public bool CPFExiste(string cpf, int? clienteId = null)
         {
-            return _bancoContext.Clientes.Any(c => c.CPF == cpf && c.ClienteID != clienteId);
+            return _bancoContext.Clientes.Any(c => c.CPF == cpf && (!clienteId.HasValue || c.ClienteID != clienteId.Value));
         }
     }
 }

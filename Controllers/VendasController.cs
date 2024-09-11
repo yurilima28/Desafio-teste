@@ -166,6 +166,7 @@ namespace Intelectah.Controllers
                 return RedirectToAction("Index");
             }
         }
+
         public JsonResult BuscarPorFabricante(int fabricanteId)
         {
             var modelos = _veiculosRepositorio.ObterModelosPorFabricante(fabricanteId);
@@ -174,8 +175,8 @@ namespace Intelectah.Controllers
             {
                 var listaModelos = modelos.Select(m => new
                 {
-                    value = m.VeiculoID,  // ID do modelo
-                    text = m.ModeloVeiculo // Nome do modelo
+                    value = m.VeiculoID, 
+                    text = m.ModeloVeiculo 
                 }).ToList();
 
                 return Json(new { sucesso = true, data = listaModelos });

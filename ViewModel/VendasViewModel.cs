@@ -6,7 +6,7 @@ namespace Intelectah.ViewModel
     {
         public int VendaId { get; set; }
         public int ClienteID { get; set; }
-        public DateTime DataVenda { get; set; }
+        public DateTime DataVenda { get; set; } = DateTime.Now;
         public decimal ValorTotal { get; set; }
         public int UsuarioID { get; set; }
         public int ConcessionariaID { get; set; }

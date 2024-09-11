@@ -54,7 +54,7 @@
                             <td></td>
                             <td>@veiculo.ModeloVeiculo</td>
                             <td>@veiculo.AnoFabricacao</td>
-                            <td>@veiculo.ValorVeiculo</td>
+                            <td>@veiculo.ValorVeiculo.ToString("C")</td>
                             <td>
                                 @veiculo.Fabricantes.FirstOrDefault(f => f.Value == veiculo.FabricanteID.ToString())?.Text
                             </td>

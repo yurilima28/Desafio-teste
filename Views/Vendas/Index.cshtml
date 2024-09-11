@@ -53,16 +53,16 @@
                         <tr>
                             <td></td>
                             <td>@venda.ClienteID</td>
-                            <td>@venda.DataVenda.ToString("dd/MM/yyyy")</td>
+                            <td>@venda.DataVenda.ToString("dd/MM/yyyy HH:mm tt")</td>
                             <td>@venda.ValorTotal.ToString("C")</td>
                             <td>@venda.UsuarioID</td>
                             <td>@venda.ConcessionariaID</td>
                             <td>@venda.ProtocoloVenda</td>
                             <td>
-                                <a role="button" class="btn btn-primary" asp-route-id="@venda.VendaId" asp-controller="Concessionarias" asp-action="Editar">Editar</a>
+                                <a role="button" class="btn btn-primary" asp-route-id="@venda.VendaId" asp-controller="Vendas" asp-action="Editar">Editar</a>
                             </td>
                             <td>
-                                <a role="button" class="btn btn-danger" asp-route-id="@venda.VendaId" asp-controller="Concessionarias" asp-action="ApagarConfirmacao">Apagar</a>
+                                <a role="button" class="btn btn-danger" asp-route-id="@venda.VendaId" asp-controller="Vendas" asp-action="ApagarConfirmacao">Apagar</a>
                             </td>
                         </tr>
                     }

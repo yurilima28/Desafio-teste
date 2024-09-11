@@ -86,9 +86,7 @@ namespace Intelectah.Repositorio
 
         public List<VeiculosModel> ObterModelosPorFabricante(int fabricanteId)
         {
-            return _bancoContext.Veiculos
-                .Where(v => v.FabricanteID == fabricanteId && !v.IsDeleted)
-                .ToList();
+            return _bancoContext.Veiculos.Where(v => v.FabricanteID == fabricanteId && !v.IsDeleted).ToList();
         }
     }
 }

@@ -3,6 +3,7 @@ using Intelectah.Repositorio;
 using Intelectah.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Intelectah.Controllers
 {
@@ -77,7 +78,7 @@ namespace Intelectah.Controllers
             }
 
             var vendaViewModel = MapearParaViewModel(venda);
-            PrepararDadosDropdowns(vendaViewModel, venda.FabricanteID); 
+            PrepararDadosDropdowns(vendaViewModel, venda.FabricanteID);
             return View(vendaViewModel);
         }
 
@@ -105,7 +106,7 @@ namespace Intelectah.Controllers
                     {
                         throw new Exception("Não foi possível gerar o protocolo de venda.");
                     }
-                    var vendaModel = MapearParaModel(vendasViewModel); 
+                    var vendaModel = MapearParaModel(vendasViewModel);
                     _vendasRepositorio.Adicionar(vendaModel);
                     return RedirectToAction("Index");
                 }
@@ -128,7 +129,7 @@ namespace Intelectah.Controllers
             {
                 try
                 {
-                    var vendaModel = MapearParaModel(vendasViewModel); 
+                    var vendaModel = MapearParaModel(vendasViewModel);
                     _vendasRepositorio.Atualizar(vendaModel);
                     TempData["MensagemSucesso"] = "Venda atualizada com sucesso!";
                     return RedirectToAction("Index");
@@ -139,7 +140,7 @@ namespace Intelectah.Controllers
                 }
             }
 
-            PrepararDadosDropdowns(vendasViewModel); 
+            PrepararDadosDropdowns(vendasViewModel);
 
             return View(vendasViewModel);
         }
@@ -166,12 +167,22 @@ namespace Intelectah.Controllers
                 return RedirectToAction("Index");
             }
         }
-        [Route("Vendas/BuscarPorFabricante")]
-        public IActionResult BuscarPorFabricante(int fabricanteId)
+        public JsonResult BuscarPorFabricante(int fabricanteId)
         {
-            var veiculos = _veiculosRepositorio.BuscarPorFabricante(fabricanteId);
-            var selectList = ObterSelectList(veiculos, v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
-            return Json(selectList);
+            var modelos = _veiculosRepositorio.ObterModelosPorFabricante(fabricanteId);
+
+            if (modelos != null && modelos.Any())
+            {
+                var listaModelos = modelos.Select(m => new
+                {
+                    value = m.VeiculoID,  // ID do modelo
+                    text = m.ModeloVeiculo // Nome do modelo
+                }).ToList();
+
+                return Json(new { sucesso = true, data = listaModelos });
+            }
+
+            return Json(new { sucesso = false, mensagem = "Nenhum modelo encontrado." });
         }
 
         private void PrepararDadosDropdowns(VendasViewModel vendasViewModel, int? fabricanteId = null)
@@ -184,67 +195,69 @@ namespace Intelectah.Controllers
 
             if (fabricanteId.HasValue)
             {
-                ViewBag.Modelos = ObterSelectList(_veiculosRepositorio.BuscarPorFabricante(fabricanteId.Value), v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
+                ViewBag.Modelos = ObterSelectList(_veiculosRepositorio.ObterModelosPorFabricante(fabricanteId.Value), v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
+
             }
             else
             {
-                ViewBag.Modelos = ObterSelectList(Enumerable.Empty<VeiculosModel>(), v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
+                ViewBag.Modelos = new List<SelectListItem>();
+
             }
         }
-
-        private IEnumerable<SelectListItem> ObterSelectList<T>(IEnumerable<T> items, Func<T, string> valueSelector, Func<T, string> textSelector)
-        {
-            return items.Select(item => new SelectListItem
+            private IEnumerable<SelectListItem> ObterSelectList<T>(IEnumerable<T> items, Func<T, string> valueSelector, Func<T, string> textSelector)
             {
-                Value = valueSelector(item),
-                Text = textSelector(item)
-            }).ToList();
-        }
-
-        private VendasViewModel MapearParaViewModel(VendasModel venda)
-        {
-            return new VendasViewModel
-            {
-                VendaId = venda.VendaId,
-                ClienteID = venda.ClienteID,
-                DataVenda = venda.DataVenda,
-                ValorTotal = venda.ValorTotal,
-                UsuarioID = venda.UsuarioID,
-                ConcessionariaID = venda.ConcessionariaID,
-                FabricanteID = venda.FabricanteID,
-                VeiculoID = venda.VeiculoID,
-                ProtocoloVenda = venda.ProtocoloVenda,
-            };
-        }
-
-        private VendasModel MapearParaModel(VendasViewModel viewModel)
-        {
-            return new VendasModel
-            {
-                VendaId = viewModel.VendaId,
-                ClienteID = viewModel.ClienteID,
-                DataVenda = viewModel.DataVenda,
-                ValorTotal = viewModel.ValorTotal,
-                UsuarioID = viewModel.UsuarioID,
-                ConcessionariaID = viewModel.ConcessionariaID,
-                FabricanteID = viewModel.FabricanteID,
-                VeiculoID = viewModel.VeiculoID,
-                ProtocoloVenda = viewModel.ProtocoloVenda,
-            };
-        }
-
-        private string GerarProtocoloVenda()
-        {
-            try
-            {
-                var protocolo = DateTime.Now.ToString("yyyyMMddHHmmss");
-                return protocolo;
+                return items.Select(item => new SelectListItem
+                {
+                    Value = valueSelector(item),
+                    Text = textSelector(item)
+                }).ToList();
             }
-            catch (Exception erro)
+
+            private VendasViewModel MapearParaViewModel(VendasModel venda)
             {
-                TempData["MensagemErro"] = "Ocorreu um erro ao gerar o protocolo de venda. Por favor, tente novamente.";
-                return null;
+                return new VendasViewModel
+                {
+                    VendaId = venda.VendaId,
+                    ClienteID = venda.ClienteID,
+                    DataVenda = venda.DataVenda,
+                    ValorTotal = venda.ValorTotal,
+                    UsuarioID = venda.UsuarioID,
+                    ConcessionariaID = venda.ConcessionariaID,
+                    FabricanteID = venda.FabricanteID,
+                    VeiculoID = venda.VeiculoID,
+                    ProtocoloVenda = venda.ProtocoloVenda,
+                };
             }
-        }
+
+            private VendasModel MapearParaModel(VendasViewModel viewModel)
+            {
+                return new VendasModel
+                {
+                    VendaId = viewModel.VendaId,
+                    ClienteID = viewModel.ClienteID,
+                    DataVenda = viewModel.DataVenda,
+                    ValorTotal = viewModel.ValorTotal,
+                    UsuarioID = viewModel.UsuarioID,
+                    ConcessionariaID = viewModel.ConcessionariaID,
+                    FabricanteID = viewModel.FabricanteID,
+                    VeiculoID = viewModel.VeiculoID,
+                    ProtocoloVenda = viewModel.ProtocoloVenda,
+                };
+            }
+
+            private string GerarProtocoloVenda()
+            {
+                try
+                {
+                    var protocolo = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    return protocolo;
+                }
+                catch (Exception erro)
+                {
+                    TempData["MensagemErro"] = "Ocorreu um erro ao gerar o protocolo de venda. Por favor, tente novamente.";
+                    return null;
+                }
+            }
+        
     }
 }

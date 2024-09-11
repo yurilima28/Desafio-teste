@@ -42,39 +42,39 @@
     </div>
 
     <div class="col-md-6">
-        <div class="col-md-6">
-            <label asp-for="FabricanteID" class="form-label">Fabricante</label>
-            <select asp-for="FabricanteID" id="fabricanteSelect" class="form-select">
-                <option value="">Selecione um fabricante</option>
-                @foreach (var fabricante in (IEnumerable<SelectListItem>)ViewBag.Fabricantes)
-                {
-                    <option value="@fabricante.Value">@fabricante.Text</option>
-                }
-            </select>
-            <span asp-validation-for="FabricanteID" class="text-danger"></span>
-        </div>
+        <label asp-for="FabricanteID" class="form-label">Fabricante</label>
+        <select asp-for="FabricanteID" id="FabricanteID" class="form-select">
+            <option value="">Selecione um fabricante</option>
+            @foreach (var fabricante in (IEnumerable<SelectListItem>)ViewBag.Fabricantes)
+            {
+                <option value="@fabricante.Value">@fabricante.Text</option>
+            }
+        </select>
+        <span asp-validation-for="FabricanteID" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <label asp-for="VeiculoID" class="form-label">Modelo</label>
+        <select asp-for="VeiculoID" id="veiculoSelect" class="form-select">
+            <option value="">Selecione um modelo</option>
+            @foreach (var modelo in (IEnumerable<SelectListItem>)ViewBag.Modelos)
+            {
+                <option value="@modelo.Value">@modelo.Text</option>
+            }
+        </select>
+        <span asp-validation-for="VeiculoID" class="text-danger"></span>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <label asp-for="VeiculoID" class="form-label">Modelo</label>
-            <select asp-for="VeiculoID" id="veiculoSelect" class="form-select">
-                <option value="">Selecione um modelo</option>
-                @foreach (var modelo in (IEnumerable<SelectListItem>)ViewBag.Modelos)
-                {
-                    <option value="@modelo.Value">@modelo.Text</option>
-                }
-            </select>
-
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="ProtocoloVenda" class="form-label">Protocolo da Venda</label>
-            <input asp-for="ProtocoloVenda" class="form-control" value="@Model.ProtocoloVenda" readonly />
-            <span asp-validation-for="ProtocoloVenda" class="text-danger"></span>
-        </div>
+    <div class="col-md-6">
+        <label asp-for="ProtocoloVenda" class="form-label">Protocolo da Venda</label>
+        <input asp-for="ProtocoloVenda" class="form-control" readonly />
+        <span asp-validation-for="ProtocoloVenda" class="text-danger"></span>
     </div>
+</div>
 
-    @section Scripts {
-        <script src="~/js/vendas.js"></script>
-    }
+@section Scripts {
+    <script src="~/js/site.js"></script>
+
+}

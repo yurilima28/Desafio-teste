@@ -40,6 +40,7 @@
                     <th scope="col">Valor Total</th>
                     <th scope="col">Usuário</th>
                     <th scope="col">Concessionária</th>
+                    <th scope="col">Protocolo</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
                 </tr>
@@ -56,6 +57,7 @@
                             <td>@venda.ValorTotal.ToString("C")</td>
                             <td>@venda.UsuarioID</td>
                             <td>@venda.ConcessionariaID</td>
+                            <td>@venda.ProtocoloVenda</td>
                             <td>
                                 <a role="button" class="btn btn-primary" asp-route-id="@venda.VendaId" asp-controller="Concessionarias" asp-action="Editar">Editar</a>
                             </td>

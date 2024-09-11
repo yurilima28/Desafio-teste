@@ -48,39 +48,4 @@
     <span asp-validation-for="CapacidadeMax" class="text-danger"></span>
 </div>
 
-@section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            Inputmask("99999-999").mask(document.getElementById('cep'));
-            Inputmask("(99) 99999-9999").mask(document.getElementById('telefone'));
 
-            const cepInput = document.getElementById('cep');
-            const telefoneInput = document.getElementById('telefone');
-            const cepError = document.getElementById('cep-error');
-            const telefoneError = document.getElementById('telefone-error');
-
-            cepInput.addEventListener('blur', function () {
-                const cep = cepInput.value.replace(/\D/g, '');
-                if (cep.length !== 8) {
-                    cepError.textContent = 'CEP inválido!';
-                    cepInput.classList.add('is-invalid');
-                } else {
-                    cepError.textContent = '';
-                    cepInput.classList.remove('is-invalid');
-                }
-            });
-
-            telefoneInput.addEventListener('blur', function () {
-                const telefone = telefoneInput.value.replace(/\D/g, '');
-                if (telefone.length < 10) {
-                    telefoneError.textContent = 'Telefone inválido!';
-                    telefoneInput.classList.add('is-invalid');
-                } else {
-                    telefoneError.textContent = '';
-                    telefoneInput.classList.remove('is-invalid');
-                }
-            });
-        });
-    </script>
-}

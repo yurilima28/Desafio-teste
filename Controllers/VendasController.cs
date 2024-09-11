@@ -81,16 +81,32 @@ namespace Intelectah.Controllers
             return View(vendaViewModel);
         }
 
-        public IActionResult Apagar(int id)
+        public IActionResult ApagarConfirmacao(int id)
         {
-            var venda = _vendasRepositorio.ListarPorId(id, incluirExcluidos: true);
-            if (venda == null)
+            try
             {
-                TempData["MensagemErro"] = "Venda não encontrada.";
+                var venda = _vendasRepositorio.ListarPorId(id);
+                if (venda == null)
+                {
+                    TempData["MensagemErro"] = "Venda não encontrado.";
+                    return RedirectToAction("Index");
+                }
+
+                var viewModel = new VendasViewModel
+                {
+                    VendaId = venda.VendaId,
+                    ClienteID = venda.ClienteID,
+                    UsuarioID = venda.UsuarioID,
+                    ConcessionariaID = venda.ConcessionariaID,
+
+                };
+                return View(viewModel);
+            }
+            catch (Exception erro)
+            {
+                TempData["MensagemErro"] = $"Não foi possível obter os dados da venda. Detalhe do erro: {erro.Message}";
                 return RedirectToAction("Index");
             }
-
-            return View(venda);
         }
 
         [HttpPost]
@@ -116,7 +132,6 @@ namespace Intelectah.Controllers
                     return View(vendasViewModel);
                 }
             }
-
             PrepararDadosDropdowns(vendasViewModel);
             return View(vendasViewModel);
         }
@@ -138,35 +153,33 @@ namespace Intelectah.Controllers
                     TempData["MensagemErro"] = "Ocorreu um erro ao atualizar a venda. Por favor, tente novamente.";
                 }
             }
-
             PrepararDadosDropdowns(vendasViewModel);
-
             return View(vendasViewModel);
         }
 
         [HttpPost]
-        public IActionResult ApagarConfirmacao(int id)
+        public IActionResult Apagar(int id)
         {
             try
             {
-                var venda = _vendasRepositorio.ListarPorId(id, incluirExcluidos: true);
-                if (venda == null)
+                bool apagado = _vendasRepositorio.Apagar(id);
+                if (apagado)
                 {
-                    TempData["MensagemErro"] = "Venda não encontrada.";
-                    return RedirectToAction("Index");
+                    TempData["MensagemSucesso"] = "Fabricante deletado com sucesso";
                 }
-
-                _vendasRepositorio.Apagar(id);
-                TempData["MensagemSucesso"] = "Venda excluída com sucesso!";
+                else
+                {
+                    TempData["MensagemErro"] = "Não foi possível deletar o fabricante.";
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception erro)
             {
-                TempData["MensagemErro"] = "Ocorreu um erro ao excluir a venda. Por favor, tente novamente.";
+                TempData["MensagemErro"] = $"Não foi possível deletar o fabricante, tente novamente. Detalhe do erro: {erro.Message}";
                 return RedirectToAction("Index");
             }
         }
-
+        
         public JsonResult BuscarPorFabricante(int fabricanteId)
         {
             var modelos = _veiculosRepositorio.ObterModelosPorFabricante(fabricanteId);
@@ -178,10 +191,8 @@ namespace Intelectah.Controllers
                     value = m.VeiculoID, 
                     text = m.ModeloVeiculo 
                 }).ToList();
-
                 return Json(new { sucesso = true, data = listaModelos });
             }
-
             return Json(new { sucesso = false, mensagem = "Nenhum modelo encontrado." });
         }
 
@@ -196,12 +207,10 @@ namespace Intelectah.Controllers
             if (fabricanteId.HasValue)
             {
                 ViewBag.Modelos = ObterSelectList(_veiculosRepositorio.ObterModelosPorFabricante(fabricanteId.Value), v => v.VeiculoID.ToString(), v => v.ModeloVeiculo);
-
             }
             else
             {
                 ViewBag.Modelos = new List<SelectListItem>();
-
             }
         }
 

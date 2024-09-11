@@ -122,29 +122,6 @@ namespace Intelectah.Controllers
                 return View("Error");
             }
         }
-
-        public IActionResult Apagar(int id)
-        {
-            try
-            {
-                bool apagado = _veiculosRepositorio.Apagar(id);
-                if (apagado)
-                {
-                    TempData["MensagemSucesso"] = "Veículo deletado com sucesso";
-                }
-                else
-                {
-                    TempData["MensagemErro"] = "Não foi possível deletar o veículo.";
-                }
-                return RedirectToAction("Index");
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Não foi possível deletar o veículo, tente novamente. Detalhe do erro: {erro.Message}";
-                return RedirectToAction("Index");
-            }
-        }
-
         public IActionResult ApagarConfirmacao(int id)
         {
             try
@@ -172,6 +149,7 @@ namespace Intelectah.Controllers
                 return RedirectToAction("Index");
             }
         }
+
 
         [HttpPost]
         public IActionResult Criar(VeiculosViewModel viewModel)
@@ -243,6 +221,29 @@ namespace Intelectah.Controllers
             {
                 TempData["MensagemErro"] = $"Erro ao atualizar o veículo: {erro.Message}";
                 return View(viewModel);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Apagar(int id)
+        {
+            try
+            {
+                bool apagado = _veiculosRepositorio.Apagar(id);
+                if (apagado)
+                {
+                    TempData["MensagemSucesso"] = "Veículo deletado com sucesso";
+                }
+                else
+                {
+                    TempData["MensagemErro"] = "Não foi possível deletar o veículo.";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception erro)
+            {
+                TempData["MensagemErro"] = $"Não foi possível deletar o veículo, tente novamente. Detalhe do erro: {erro.Message}";
+                return RedirectToAction("Index");
             }
         }
     }

@@ -53,10 +53,10 @@
                             <td>@usuario.Email</td>
                             <td>@Enum.GetName(typeof(PerfilEnum), usuario.NivelAcesso)</td>
                             <td>
-                                <a role="button" class="btn btn-primary" asp-route-id="@usuario.UsuarioID" asp-controller="Concessionarias" asp-action="Editar">Editar</a>
+                                <a role="button" class="btn btn-primary" asp-route-id="@usuario.UsuarioID" asp-controller="Usuarios" asp-action="Editar">Editar</a>
                             </td>
                             <td>
-                                <a role="button" class="btn btn-danger" asp-route-id="@usuario.UsuarioID" asp-controller="Concessionarias" asp-action="ApagarConfirmacao">Apagar</a>
+                                <a role="button" class="btn btn-danger" asp-route-id="@usuario.UsuarioID" asp-controller="Usuarios" asp-action="ApagarConfirmacao">Apagar</a>
                             </td>
                         </tr>
                     }

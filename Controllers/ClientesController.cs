@@ -7,7 +7,7 @@ namespace Intelectah.Controllers
 {
     public class ClientesController : Controller
     {
-       private readonly IClientesRepositorio _clientesRepositorio;
+        private readonly IClientesRepositorio _clientesRepositorio;
         public ClientesController(IClientesRepositorio clientesRepositorio)
         {
             _clientesRepositorio = clientesRepositorio;
@@ -85,29 +85,34 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Criar(ClientesViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
-
-            if (_clientesRepositorio.CPFExiste(viewModel.CPF))
-            {
-                ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
-                return View(viewModel);
-            }
-
             try
             {
-                var clienteModel = new ClientesModel
+                if (!ModelState.IsValid)
                 {
-                    Nome = viewModel.Nome,
-                    CPF = viewModel.CPF
-                };
+                    return View(viewModel);
+                }
 
-                _clientesRepositorio.Adicionar(clienteModel);
+                if (_clientesRepositorio.CPFExiste(viewModel.CPF))
+                {
+                    ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
+                    return View(viewModel);
+                }
+                if (ModelState.IsValid)
+                {
 
-                TempData["MensagemSucesso"] = "Cliente criado com sucesso!";
-                return RedirectToAction("Index");
+                    var clienteModel = new ClientesModel
+                    {
+                        Nome = viewModel.Nome,
+                        CPF = viewModel.CPF,
+                        Email = viewModel.Email,
+                        Telefone = viewModel.Telefone
+                    };
+
+                    _clientesRepositorio.Adicionar(clienteModel);
+
+                    TempData["MensagemSucesso"] = "Cliente criado com sucesso!";
+                    return RedirectToAction("Index");
+                }
             }
             catch (Exception erro)
             {
@@ -120,39 +125,49 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Editar(ClientesViewModel viewModel)
         {
-            if (viewModel.Nome.Length > 100)
+            try
             {
-                ModelState.AddModelError(nameof(viewModel.Nome), "O nome do cliente não pode exceder 100 caracteres.");
-            }
-          
-            if (!ValidarCPF(viewModel.CPF))
-            {
-                ModelState.AddModelError(nameof(viewModel.CPF), "O CPF informado é inválido.");
-            }
-
-            if (_clientesRepositorio.CPFExiste(viewModel.CPF))
-            {
-                ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
-                return View(viewModel);
-            }
-
-            if (ModelState.IsValid)
-            {
-                var cliente = new ClientesModel
+                if (viewModel.Nome.Length > 100)
                 {
-                    ClienteID = viewModel.ClienteID,
-                    Nome = viewModel.Nome,
-                    CPF = viewModel.CPF,
-                    Telefone = viewModel.Telefone,
-                    Email = viewModel.Email
-                };
+                    ModelState.AddModelError(nameof(viewModel.Nome), "O nome do cliente não pode exceder 100 caracteres.");
+                }
 
-                _clientesRepositorio.Atualizar(cliente);
-                TempData["MensagemSucesso"] = "Cliente atualizado com sucesso.";
-                return RedirectToAction("Index");
+                if (!ValidarCPF(viewModel.CPF))
+                {
+                    ModelState.AddModelError(nameof(viewModel.CPF), "O CPF informado é inválido.");
+                }
+
+                if (_clientesRepositorio.CPFExiste(viewModel.CPF))
+                {
+                    ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
+                    return View(viewModel);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var cliente = new ClientesModel
+                    {
+                        ClienteID = viewModel.ClienteID,
+                        Nome = viewModel.Nome,
+                        CPF = viewModel.CPF,
+                        Telefone = viewModel.Telefone,
+                        Email = viewModel.Email
+                    };
+
+                    _clientesRepositorio.Atualizar(cliente);
+                    TempData["MensagemSucesso"] = "Cliente atualizado com sucesso.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(viewModel);
+
             }
-
+            catch (Exception erro)
+            {
+                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
+            }
             return View(viewModel);
+
         }
 
         [HttpPost]

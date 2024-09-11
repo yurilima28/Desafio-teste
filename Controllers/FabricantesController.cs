@@ -14,7 +14,7 @@ namespace Intelectah.Controllers
             _fabricantesRepositorio = fabricantesRepositorio;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {
@@ -68,28 +68,6 @@ namespace Intelectah.Controllers
             {
                 ViewBag.ErrorMessage = "Ocorreu um erro ao buscar o fabricante para edição. Tente novamente mais tarde.";
                 return View("Error");
-            }
-        }
-
-        public IActionResult Apagar(int id)
-        {
-            try
-            {
-                bool apagado = _fabricantesRepositorio.Apagar(id);
-                if (apagado)
-                {
-                    TempData["MensagemSucesso"] = "Fabricante deletado com sucesso";
-                }
-                else
-                {
-                    TempData["MensagemErro"] = "Não foi possível deletar o fabricante.";
-                }
-                return RedirectToAction("Index");
-            }
-            catch (Exception erro)
-            {
-                TempData["MensagemErro"] = $"Não foi possível deletar o fabricante, tente novamente. Detalhe do erro: {erro.Message}";
-                return RedirectToAction("Index");
             }
         }
 
@@ -194,5 +172,29 @@ namespace Intelectah.Controllers
                 return View(viewModel);
             }
         }
+
+        [HttpPost]
+        public IActionResult Apagar(int id)
+        {
+            try
+            {
+                bool apagado = _fabricantesRepositorio.Apagar(id);
+                if (apagado)
+                {
+                    TempData["MensagemSucesso"] = "Fabricante deletado com sucesso";
+                }
+                else
+                {
+                    TempData["MensagemErro"] = "Não foi possível deletar o fabricante.";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception erro)
+            {
+                TempData["MensagemErro"] = $"Não foi possível deletar o fabricante, tente novamente. Detalhe do erro: {erro.Message}";
+                return RedirectToAction("Index");
+            }
+        }
     }
 }
+

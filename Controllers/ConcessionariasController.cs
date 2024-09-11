@@ -10,7 +10,6 @@ namespace Intelectah.Controllers
     {
 
         private readonly IConcessionariasRepositorio _concessionariasRepositorio;
-        private readonly BancoContext _bancoContext;
 
         public ConcessionariasController(IConcessionariasRepositorio concessionariasRepositorio)
         {
@@ -49,36 +48,7 @@ namespace Intelectah.Controllers
             ViewData["FormAction"] = "Criar";
             return View(viewModel);
         }
-
-        public IActionResult ApagarConfirmacao(int id)
-        {
-            var concessionaria = _concessionariasRepositorio.ListarPorId(id);
-
-            if (concessionaria == null)
-            {
-                TempData["MensagemErro"] = "Concessionária não encontrada.";
-                return RedirectToAction("Index");
-            }
-
-            var viewModel = new ConcessionariasViewModel
-            {
-                ConcessionariaID = concessionaria.ConcessionariaID,
-                Nome = concessionaria.Nome,
-                Endereco = new EnderecoViewModel
-                {
-                    EnderecoCompleto = concessionaria.EnderecoCompleto,
-                    Cidade = concessionaria.Cidade,
-                    Estado = concessionaria.Estado,
-                    CEP = concessionaria.CEP
-                },
-                Telefone = concessionaria.Telefone,
-                Email = concessionaria.Email,
-                CapacidadeMax = concessionaria.CapacidadeMax
-            };
-
-            return View(viewModel);
-        }
-
+     
         public IActionResult Editar(int id)
         {
             var concessionaria = _concessionariasRepositorio.ListarPorId(id);
@@ -106,6 +76,34 @@ namespace Intelectah.Controllers
             };
 
             ViewData["FormAction"] = "Editar";
+            return View(viewModel);
+        }
+
+        public IActionResult ApagarConfirmacao(int id)
+        {
+            var concessionaria = _concessionariasRepositorio.ListarPorId(id);
+
+            if (concessionaria == null)
+            {
+                TempData["MensagemErro"] = "Concessionária não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            var viewModel = new ConcessionariasViewModel
+            {
+                ConcessionariaID = concessionaria.ConcessionariaID,
+                Nome = concessionaria.Nome,
+                Endereco = new EnderecoViewModel
+                {
+                    EnderecoCompleto = concessionaria.EnderecoCompleto,
+                    Cidade = concessionaria.Cidade,
+                    Estado = concessionaria.Estado,
+                    CEP = concessionaria.CEP
+                },
+                Telefone = concessionaria.Telefone,
+                Email = concessionaria.Email,
+                CapacidadeMax = concessionaria.CapacidadeMax
+            };
             return View(viewModel);
         }
 

@@ -34,21 +34,29 @@ namespace Intelectah.Controllers
         public IActionResult Index()
         {
             var vendas = _vendasRepositorio.BuscarTodos();
+
             var vendasViewModel = vendas.Select(v => new VendasViewModel
             {
                 VendaId = v.VendaId,
                 ClienteID = v.ClienteID,
+                NomeCliente = v.Cliente?.Nome, // Supondo que Cliente tem uma propriedade Nome
                 DataVenda = v.DataVenda,
                 ValorTotal = v.ValorTotal,
                 UsuarioID = v.UsuarioID,
+                NomeUsuario = v.Usuario?.NomeUsuario, // Supondo que Usuario tem uma propriedade NomeUsuario
                 ConcessionariaID = v.ConcessionariaID,
+                NomeConcessionaria = v.Concessionaria?.Nome, // Supondo que Concessionaria tem uma propriedade Nome
                 FabricanteID = v.FabricanteID,
+                NomeFabricante = v.Fabricante?.NomeFabricante, // Supondo que Fabricante tem uma propriedade Nome
                 VeiculoID = v.VeiculoID,
-                ProtocoloVenda = v.ProtocoloVenda
-            });
+                ModeloVeiculo = v.Veiculo?.ModeloVeiculo, // Supondo que Veiculo tem uma propriedade ModeloVeiculo
+                ProtocoloVenda = v.ProtocoloVenda,
+                IsDeleted = v.IsDeleted
+            }).ToList();
 
             return View(vendasViewModel);
         }
+
 
         public IActionResult Criar()
         {
@@ -166,17 +174,17 @@ namespace Intelectah.Controllers
                 bool apagado = _vendasRepositorio.Apagar(id);
                 if (apagado)
                 {
-                    TempData["MensagemSucesso"] = "Fabricante deletado com sucesso";
+                    TempData["MensagemSucesso"] = "Venda excluida com sucesso";
                 }
                 else
                 {
-                    TempData["MensagemErro"] = "Não foi possível deletar o fabricante.";
+                    TempData["MensagemErro"] = "Não foi possível deletar a venda.";
                 }
                 return RedirectToAction("Index");
             }
             catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Não foi possível deletar o fabricante, tente novamente. Detalhe do erro: {erro.Message}";
+                TempData["MensagemErro"] = $"Não foi possível deletar a venda, tente novamente. Detalhe do erro: {erro.Message}";
                 return RedirectToAction("Index");
             }
         }

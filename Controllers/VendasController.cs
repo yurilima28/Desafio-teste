@@ -34,29 +34,21 @@ namespace Intelectah.Controllers
         public IActionResult Index()
         {
             var vendas = _vendasRepositorio.BuscarTodos();
-
             var vendasViewModel = vendas.Select(v => new VendasViewModel
             {
                 VendaId = v.VendaId,
                 ClienteID = v.ClienteID,
-                NomeCliente = v.Cliente?.Nome, 
                 DataVenda = v.DataVenda,
                 ValorTotal = v.ValorTotal,
                 UsuarioID = v.UsuarioID,
-                NomeUsuario = v.Usuario?.NomeUsuario,
                 ConcessionariaID = v.ConcessionariaID,
-                NomeConcessionaria = v.Concessionaria?.Nome, 
                 FabricanteID = v.FabricanteID,
-                NomeFabricante = v.Fabricante?.NomeFabricante, 
                 VeiculoID = v.VeiculoID,
-                ModeloVeiculo = v.Veiculo?.ModeloVeiculo, 
-                ProtocoloVenda = v.ProtocoloVenda,
-                IsDeleted = v.IsDeleted
-            }).ToList();
+                ProtocoloVenda = v.ProtocoloVenda
+            });
 
             return View(vendasViewModel);
         }
-
 
         public IActionResult Criar()
         {
@@ -174,7 +166,7 @@ namespace Intelectah.Controllers
                 bool apagado = _vendasRepositorio.Apagar(id);
                 if (apagado)
                 {
-                    TempData["MensagemSucesso"] = "Venda excluida com sucesso";
+                    TempData["MensagemSucesso"] = "Venda deletado com sucesso";
                 }
                 else
                 {

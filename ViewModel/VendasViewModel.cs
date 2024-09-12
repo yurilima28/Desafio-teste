@@ -15,17 +15,9 @@ namespace Intelectah.ViewModel
         public string ProtocoloVenda { get; set; }
         public bool IsDeleted { get; set; }
 
-        public string NomeCliente { get; set; }
-        public string NomeUsuario { get; set; }
-        public string NomeConcessionaria { get; set; }
-        public string NomeFabricante { get; set; }
-        public string ModeloVeiculo { get; set; }
-
-
         public VendasViewModel()
         {
         }
-
         public VendasViewModel(int vendaId, int clienteId, DateTime dataVenda, decimal valorTotal, int usuarioId, string nomeCliente, string nomeUsuario, string nomeConcessionaria, int fabricanteId, string protocoloVenda, bool isDeleted = false)
         {
             VendaId = vendaId;

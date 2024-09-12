@@ -39,7 +39,7 @@
                     <th scope="col">Data da Venda</th>
                     <th scope="col">Valor Total</th>
                     <th scope="col">Usuário</th>
-                    <th scope="col">Veiculo</th>
+                    <th scope="col">Veiculo<th>
                     <th scope="col">Fabricante</th>
                     <th scope="col">Concessionária</th>
                     <th scope="col">Protocolo</th>
@@ -54,20 +54,21 @@
                     {
                         <tr>
                             <td></td>
-                            <td>@venda.NomeCliente</td>
+                            <td>@venda.ClienteID</td>
                             <td>@venda.DataVenda.ToString("dd/MM/yyyy HH:mm tt")</td>
                             <td>@venda.ValorTotal.ToString("C")</td>
-                            <td>@venda.NomeUsuario</td>
-                            <td>@venda.ModeloVeiculo</td>
-                            <th>@venda.NomeFabricante</th>
-                            <th>@venda.NomeConcessionaria</th>
-                            <td>@venda.ProtocoloVenda</td>                                                                              
+                            <td>@venda.UsuarioID</td>
+                            <td>@venda.VeiculoID</td>
+                            <td>@venda.FabricanteID</td>
+                            <td>@venda.ConcessionariaID</td>
+                            <td>@venda.ProtocoloVenda</td>                           
                             <td>
                                 <a role="button" class="btn btn-primary" asp-route-id="@venda.VendaId" asp-controller="Vendas" asp-action="Editar">Editar</a>
                             </td>
                             <td>
                                 <a role="button" class="btn btn-danger" asp-route-id="@venda.VendaId" asp-controller="Vendas" asp-action="ApagarConfirmacao">Apagar</a>
                             </td>
+                            <td></td>
                         </tr>
                     }
                 }

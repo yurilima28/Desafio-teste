@@ -39,17 +39,17 @@ namespace Intelectah.Controllers
             {
                 VendaId = v.VendaId,
                 ClienteID = v.ClienteID,
-                NomeCliente = v.Cliente?.Nome, // Supondo que Cliente tem uma propriedade Nome
+                NomeCliente = v.Cliente?.Nome, 
                 DataVenda = v.DataVenda,
                 ValorTotal = v.ValorTotal,
                 UsuarioID = v.UsuarioID,
-                NomeUsuario = v.Usuario?.NomeUsuario, // Supondo que Usuario tem uma propriedade NomeUsuario
+                NomeUsuario = v.Usuario?.NomeUsuario,
                 ConcessionariaID = v.ConcessionariaID,
-                NomeConcessionaria = v.Concessionaria?.Nome, // Supondo que Concessionaria tem uma propriedade Nome
+                NomeConcessionaria = v.Concessionaria?.Nome, 
                 FabricanteID = v.FabricanteID,
-                NomeFabricante = v.Fabricante?.NomeFabricante, // Supondo que Fabricante tem uma propriedade Nome
+                NomeFabricante = v.Fabricante?.NomeFabricante, 
                 VeiculoID = v.VeiculoID,
-                ModeloVeiculo = v.Veiculo?.ModeloVeiculo, // Supondo que Veiculo tem uma propriedade ModeloVeiculo
+                ModeloVeiculo = v.Veiculo?.ModeloVeiculo, 
                 ProtocoloVenda = v.ProtocoloVenda,
                 IsDeleted = v.IsDeleted
             }).ToList();

@@ -1,5 +1,12 @@
 ﻿@model Intelectah.ViewModel.VendasViewModel
 
+@Html.HiddenFor(x => x.NomeCliente)
+@Html.HiddenFor(x => x.NomeVeiculo)
+@Html.HiddenFor(x => x.NomeConcessionaria)
+@Html.HiddenFor(x => x.NomeFabricante)
+@Html.HiddenFor(x => x.NomeUsario)
+
+
 <div class="row">
     <div class="col-md-6">
         <label asp-for="ClienteID" class="form-label">Selecione o cliente</label>

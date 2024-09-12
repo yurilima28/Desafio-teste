@@ -34,16 +34,36 @@ namespace Intelectah.Controllers
         public IActionResult Index()
         {
             var vendas = _vendasRepositorio.BuscarTodos();
+            foreach (var venda in vendas)
+            {
+                var usuario = _usuariosRepositorio.ListarPorId(venda.UsuarioID);
+                var cliente = _clientesRepositorio.ListarPorId(venda.ClienteID);
+                var concessionaria = _concessionariasRepositorio.ListarPorId(venda.ConcessionariaID);
+                var fabricante = _fabricantesRepositorio.ListarPorId(venda.FabricanteID);
+                var veiculo = _veiculosRepositorio.ListarPorId(venda.VeiculoID);
+
+                venda.Usuario = usuario;
+                venda.Cliente = cliente;
+                venda.Concessionaria = concessionaria;
+                venda.Fabricante = fabricante;
+                venda.Veiculo = veiculo;
+            }
+
             var vendasViewModel = vendas.Select(v => new VendasViewModel
             {
                 VendaId = v.VendaId,
                 ClienteID = v.ClienteID,
+                NomeCliente = v.Cliente.Nome,
                 DataVenda = v.DataVenda,
                 ValorTotal = v.ValorTotal,
                 UsuarioID = v.UsuarioID,
+                NomeUsario = v.Usuario.NomeUsuario,
                 ConcessionariaID = v.ConcessionariaID,
+                NomeConcessionaria = v.Concessionaria.Nome,
                 FabricanteID = v.FabricanteID,
+                NomeFabricante = v.Fabricante.NomeFabricante,
                 VeiculoID = v.VeiculoID,
+                NomeVeiculo = v.Veiculo.ModeloVeiculo,
                 ProtocoloVenda = v.ProtocoloVenda
             });
 
@@ -180,7 +200,7 @@ namespace Intelectah.Controllers
                 return RedirectToAction("Index");
             }
         }
-        
+
         public JsonResult BuscarPorFabricante(int fabricanteId)
         {
             var modelos = _veiculosRepositorio.ObterModelosPorFabricante(fabricanteId);
@@ -189,8 +209,8 @@ namespace Intelectah.Controllers
             {
                 var listaModelos = modelos.Select(m => new
                 {
-                    value = m.VeiculoID, 
-                    text = m.ModeloVeiculo 
+                    value = m.VeiculoID,
+                    text = m.ModeloVeiculo
                 }).ToList();
                 return Json(new { sucesso = true, data = listaModelos });
             }
@@ -230,12 +250,17 @@ namespace Intelectah.Controllers
             {
                 VendaId = venda.VendaId,
                 ClienteID = venda.ClienteID,
+                NomeCliente = venda.Cliente.Nome,
                 DataVenda = venda.DataVenda,
                 ValorTotal = venda.ValorTotal,
                 UsuarioID = venda.UsuarioID,
+                NomeUsario = venda.Usuario.NomeUsuario,
                 ConcessionariaID = venda.ConcessionariaID,
+                NomeConcessionaria = venda.Concessionaria.Nome,
                 FabricanteID = venda.FabricanteID,
+                NomeFabricante = venda.Fabricante.NomeFabricante,
                 VeiculoID = venda.VeiculoID,
+                NomeVeiculo = venda.Veiculo.ModeloVeiculo,
                 ProtocoloVenda = venda.ProtocoloVenda,
             };
         }

@@ -40,7 +40,6 @@ namespace Intelectah.Models
         public VendasModel()
         {
             ProtocoloVenda = GerarProtocoloVenda();
-
         }
 
         public VendasModel(int clienteID, decimal valorTotal, DateTime dataVenda, int usuarioID, int concessionarID, int fabricanteID, int veiculoID, string protocoloVenda, bool isDeleted = false)

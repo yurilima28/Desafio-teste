@@ -43,7 +43,8 @@ namespace Intelectah.Controllers
                 UsuarioID = v.UsuarioID,
                 ConcessionariaID = v.ConcessionariaID,
                 FabricanteID = v.FabricanteID,
-                VeiculoID = v.VeiculoID
+                VeiculoID = v.VeiculoID,
+                ProtocoloVenda = v.ProtocoloVenda
             });
 
             return View(vendasViewModel);

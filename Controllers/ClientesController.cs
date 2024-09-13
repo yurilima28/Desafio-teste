@@ -92,6 +92,11 @@ namespace Intelectah.Controllers
                     return View(viewModel);
                 }
 
+                if (!ValidarCPF(viewModel.CPF))
+                {
+                    ModelState.AddModelError(nameof(viewModel.CPF), "O CPF informado é inválido.");
+                }
+
                 if (_clientesRepositorio.CPFExiste(viewModel.CPF))
                 {
                     ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
@@ -196,7 +201,42 @@ namespace Intelectah.Controllers
 
         private bool ValidarCPF(string cpf)
         {
-            return cpf.Length == 11 && cpf.All(char.IsDigit);
+
+            cpf = new string(cpf.Where(char.IsDigit).ToArray());
+
+            if (cpf.Length != 11)
+            {
+                return false;
+            }
+
+            if (cpf.All(c => c == cpf[0]))
+            {
+                return false;
+            }
+
+            int soma = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                soma += (cpf[i] - '0') * (10 - i);
+            }
+            int primeiroDigito = 11 - (soma % 11);
+            primeiroDigito = (primeiroDigito >= 10) ? 0 : primeiroDigito;
+
+            if (primeiroDigito != (cpf[9] - '0'))
+            {
+                return false;
+            }
+
+            soma = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                soma += (cpf[i] - '0') * (11 - i);
+            }
+            int segundoDigito = 11 - (soma % 11);
+            segundoDigito = (segundoDigito >= 10) ? 0 : segundoDigito;
+
+            return segundoDigito == (cpf[10] - '0');
+
         }
     }
 }

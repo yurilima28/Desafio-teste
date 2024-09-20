@@ -1,8 +1,5 @@
 ﻿using Intelectah.Dapper;
 using Intelectah.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Intelectah.Repositorio
 {
@@ -41,6 +38,16 @@ namespace Intelectah.Repositorio
 
         public ConcessionariasModel Adicionar(ConcessionariasModel concessionaria)
         {
+            if (concessionaria.Nome.Length > 100)
+            {
+                throw new ArgumentException("O nome da concessionária não pode exceder 100 caracteres.");
+            }
+
+            if (_bancoContext.Concessionarias.Any(c => c.Nome == concessionaria.Nome))
+            {
+                throw new ArgumentException("O nome da concessionária já existe.");
+            }
+
             _bancoContext.Concessionarias.Add(concessionaria);
             _bancoContext.SaveChanges();
             return concessionaria;
@@ -48,6 +55,16 @@ namespace Intelectah.Repositorio
 
         public ConcessionariasModel Atualizar(ConcessionariasModel concessionaria)
         {
+            if (concessionaria.Nome.Length > 100)
+            {
+                throw new ArgumentException("O nome da concessionária não pode exceder 100 caracteres.");
+            }
+
+            if (_bancoContext.Concessionarias.Any(c => c.Nome == concessionaria.Nome && c.ConcessionariaID != concessionaria.ConcessionariaID))
+            {
+                throw new ArgumentException("O nome da concessionária já existe.");
+            }
+
             _bancoContext.Concessionarias.Update(concessionaria);
             _bancoContext.SaveChanges();
             return concessionaria;

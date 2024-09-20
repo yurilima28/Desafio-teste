@@ -15,19 +15,21 @@ namespace Intelectah.Models
         [MaxLength(255, ErrorMessage = "O endereço completo deve ter no máximo 255 caracteres.")]
         public string EnderecoCompleto { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "A cidade da concessionária é obrigatório")]
+
         [MaxLength(50, ErrorMessage = "A cidade deve ter no máximo 50 caracteres.")]
+
         public string Cidade { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O estado da concessionária é obrigatório")]
         [MaxLength(50, ErrorMessage = "O estado deve ter no máximo 50 caracteres.")]
         public string Estado { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O CPE da concessionária é obrigatório")]
         [MaxLength(10, ErrorMessage = "O CEP deve ter no máximo 10 caracteres.")]
         public string CEP { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O telefone da concessionária é obrigatório")]
         [MaxLength(15, ErrorMessage = "O telefone deve ter no máximo 15 caracteres.")]
         public string Telefone { get; set; }
 

@@ -102,18 +102,9 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Criar(FabricantesViewModel viewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (viewModel.NomeFabricante.Length > 100)
-                {
-                    ModelState.AddModelError(nameof(viewModel.NomeFabricante), "O nome do fabricante não pode exceder 100 caracteres.");
-                }
-                if (!_fabricantesRepositorio.VerificarNomeFabricanteUnico(viewModel.NomeFabricante))
-                {
-                    ModelState.AddModelError(nameof(viewModel.NomeFabricante), "O nome do fabricante já existe.");
-                }
-
-                if (ModelState.IsValid)
+                try
                 {
                     var fabricantesModel = new FabricantesModel
                     {
@@ -128,14 +119,18 @@ namespace Intelectah.Controllers
                     TempData["MensagemSucesso"] = "Fabricante adicionado com sucesso.";
                     return RedirectToAction("Index");
                 }
-
-                return View(viewModel);
+                catch (ArgumentException erro)
+                {
+                    ModelState.AddModelError(nameof(viewModel.NomeFabricante), erro.Message);
+                    return View(viewModel);
+                }
+                catch (Exception erro)
+                {
+                    TempData["MensagemErro"] = $"Erro ao criar o fabricante: {erro.Message}";
+                    return View(viewModel);
+                }
             }
-            catch (Exception erro)
-            {
-                ModelState.AddModelError(string.Empty, $"Ocorreu um erro ao salvar o fabricante: {erro.Message}");
-                return View(viewModel);
-            }
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -143,31 +138,22 @@ namespace Intelectah.Controllers
         {
             try
             {
-                if (viewModel.NomeFabricante.Length > 100)
+                var fabricante = new FabricantesModel
                 {
-                    ModelState.AddModelError(nameof(viewModel.NomeFabricante), "O nome do fabricante não pode exceder 100 caracteres.");
-                }
-                if (!_fabricantesRepositorio.VerificarNomeFabricanteUnico(viewModel.NomeFabricante))
-                {
-                    ModelState.AddModelError(nameof(viewModel.NomeFabricante), "O nome do fabricante já existe.");
-                }
+                    FabricanteID = viewModel.FabricanteID,
+                    NomeFabricante = viewModel.NomeFabricante,
+                    PaisOrigem = viewModel.PaisOrigem,
+                    AnoFundacao = viewModel.AnoFundacao,
+                    URL = viewModel.URL
+                };
 
-                if (ModelState.IsValid)
-                {
-                    var fabricante = new FabricantesModel
-                    {
-                        FabricanteID = viewModel.FabricanteID,
-                        NomeFabricante = viewModel.NomeFabricante,
-                        PaisOrigem = viewModel.PaisOrigem,
-                        AnoFundacao = viewModel.AnoFundacao,
-                        URL = viewModel.URL
-                    };
-
-                    _fabricantesRepositorio.Atualizar(fabricante);
-                    TempData["MensagemSucesso"] = "Fabricante alterado com sucesso.";
-                    return RedirectToAction("Index");
-                }
-
+                _fabricantesRepositorio.Atualizar(fabricante);
+                TempData["MensagemSucesso"] = "Fabricante alterado com sucesso.";
+                return RedirectToAction("Index");
+            }
+            catch (ArgumentException erro)
+            {
+                ModelState.AddModelError(nameof(viewModel.NomeFabricante), erro.Message);
                 return View(viewModel);
             }
             catch (Exception erro)
@@ -201,4 +187,3 @@ namespace Intelectah.Controllers
         }
     }
 }
-

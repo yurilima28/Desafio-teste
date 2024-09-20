@@ -1,5 +1,4 @@
 ﻿using Intelectah.Models;
-using System.Collections.Generic;
 
 namespace Intelectah.Repositorio
 {
@@ -13,5 +12,6 @@ namespace Intelectah.Repositorio
         bool Restaurar(int id); 
         ClientesModel ObterPorNome(string nomeCliente);
         bool CPFExiste(string cpf, int? clienteId = null );
+        bool EmailExiste(string email, int? clienteID = null);
     }
 }

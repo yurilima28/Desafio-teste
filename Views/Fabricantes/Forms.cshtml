@@ -4,30 +4,23 @@
     <div class="form-group col-md-6">
         <label asp-for="NomeFabricante" class="control-label">Nome do fabricante</label>
         <input asp-for="NomeFabricante" class="form-control" placeholder="Informe o nome do fabricante" />
-        @Html.ValidationMessageFor(x => x.NomeFabricante, "", new { @class = "text-danger" })
+        <span asp-validation-for="NomeFabricante" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
         <label asp-for="PaisOrigem" class="control-label">País de Origem</label>
         <input asp-for="PaisOrigem" class="form-control" placeholder="Informe o país de origem" />
-        @Html.ValidationMessageFor(model => model.PaisOrigem, "", new { @class = "text-danger" })
+        <span asp-validation-for="PaisOrigem" class="text-danger"></span>
     </div>
 </div>
 <div class="row">
     <div class="form-group col-md-6">
         <label asp-for="AnoFundacao" class="control-label">Ano de fundação</label>
-        <input asp-for="AnoFundacao" type="number" class="form-control" placeholder="Informe o ano de fundação" min="1886" max="@DateTime.Now.Year" />
-        @Html.ValidationMessageFor(x => x.AnoFundacao, "", new { @class = "text-danger" })
+        <input asp-for="AnoFundacao" type="number" class="form-control" />
+        <span asp-validation-for="AnoFundacao" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
         <label asp-for="URL" class="control-label">URL</label>
         <input asp-for="URL" class="form-control" placeholder="Insira a URL do fabricante" />
-        @Html.ValidationMessageFor(x => x.URL, "", new { @class = "text-danger" })
+        <span asp-validation-for="URL" class="text-danger"></span>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        });
-    </script>
-}

@@ -1,5 +1,6 @@
 ﻿using Intelectah.Dapper;
 using Intelectah.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Intelectah.Repositorio
@@ -45,6 +46,16 @@ namespace Intelectah.Repositorio
 
         public UsuariosModel AdicionarUsuario(UsuariosModel usuario)
         {
+            if (EmailExiste(usuario.Email))
+            {
+                throw new Exception("Já existe um usuário com este email.");
+            }
+
+            if (LoginExiste(usuario.Login))
+            {
+                throw new Exception("Já existe um usuário com este login.");
+            }
+
             _bancoContext.Usuarios.Add(usuario);
             _bancoContext.SaveChanges();
             return usuario;
@@ -52,8 +63,25 @@ namespace Intelectah.Repositorio
 
         public UsuariosModel AtualizarUsuario(UsuariosModel usuario)
         {
-            _bancoContext.Usuarios.Update(usuario);
-            _bancoContext.SaveChanges();
+            if (EmailExiste(usuario.Email, usuario.UsuarioID))
+            {
+                throw new Exception("Já existe um usuário com este email.");
+            }
+
+            if (LoginExiste(usuario.Login, usuario.UsuarioID))
+            {
+                throw new Exception("Já existe um usuário com este login.");
+            }
+
+            try
+            {
+                _bancoContext.Usuarios.Update(usuario);
+                _bancoContext.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                throw new Exception("Erro ao atualizar o usuário. Verifique os dados informados.");
+            }
             return usuario;
         }
 

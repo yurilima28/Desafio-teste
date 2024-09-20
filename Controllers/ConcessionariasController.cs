@@ -110,70 +110,77 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Criar(ConcessionariasViewModel viewModel)
         {
-            if (viewModel.Nome.Length > 100)
-            {
-                ModelState.AddModelError(nameof(viewModel.Nome), "O nome da concessionária não pode exceder 100 caracteres.");
-            }
-
-            if (!_concessionariasRepositorio.VerificarNomeConcessionariaUnico(viewModel.Nome))
-            {
-                ModelState.AddModelError(nameof(viewModel.Nome), "O nome da concessionária já existe.");
-            }
-
             if (ModelState.IsValid)
             {
-                var concessionaria = new ConcessionariasModel
+                try
                 {
-                    Nome = viewModel.Nome,
-                    EnderecoCompleto = viewModel.Endereco.EnderecoCompleto,
-                    Cidade = viewModel.Endereco.Cidade,
-                    Estado = viewModel.Endereco.Estado,
-                    CEP = viewModel.Endereco.CEP,
-                    Telefone = viewModel.Telefone,
-                    Email = viewModel.Email,
-                    CapacidadeMax = viewModel.CapacidadeMax
-                };
+                    var concessionaria = new ConcessionariasModel
+                    {
+                        Nome = viewModel.Nome,
+                        EnderecoCompleto = viewModel.Endereco.EnderecoCompleto,
+                        Cidade = viewModel.Endereco.Cidade,
+                        Estado = viewModel.Endereco.Estado,
+                        CEP = viewModel.Endereco.CEP,
+                        Telefone = viewModel.Telefone,
+                        Email = viewModel.Email,
+                        CapacidadeMax = viewModel.CapacidadeMax
+                    };
 
-                _concessionariasRepositorio.Adicionar(concessionaria);
-                TempData["MensagemSucesso"] = "Concessionária cadastrada com sucesso!";
-                return RedirectToAction("Index");
+                    _concessionariasRepositorio.Adicionar(concessionaria);
+
+                    TempData["MensagemSucesso"] = "Concessionária cadastrada com sucesso!";
+                    return RedirectToAction("Index");
+                }
+                catch (ArgumentException erro)
+                {
+                    ModelState.AddModelError(nameof(viewModel.Nome), erro.Message);
+                    return View(viewModel);
+                }
+                catch (Exception erro)
+                {
+                    TempData["MensagemErro"] = $"Erro ao criar concessiónaria: {erro.Message}";
+                    return View(viewModel);
+                }
             }
-
             return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult Editar(ConcessionariasViewModel viewModel)
         {
-            if (viewModel.Nome.Length > 100)
-            {
-                ModelState.AddModelError(nameof(viewModel.Nome), "O nome da concessionária não pode exceder 100 caracteres.");
-            }
-            if (!_concessionariasRepositorio.VerificarNomeConcessionariaUnico(viewModel.Nome, viewModel.ConcessionariaID))
-            {
-                ModelState.AddModelError(nameof(viewModel.Nome), "O nome da concessionária já existe.");
-            }
             if (ModelState.IsValid)
             {
-             
-                var concessionaria = new ConcessionariasModel
+                try
                 {
-                    ConcessionariaID = viewModel.ConcessionariaID,
-                    Nome = viewModel.Nome,
-                    EnderecoCompleto = viewModel.Endereco.EnderecoCompleto,
-                    Cidade = viewModel.Endereco.Cidade,
-                    Estado = viewModel.Endereco.Estado,
-                    CEP = viewModel.Endereco.CEP,
-                    Telefone = viewModel.Telefone,
-                    Email = viewModel.Email,
-                    CapacidadeMax = viewModel.CapacidadeMax
-                };
+                    var concessionaria = new ConcessionariasModel
+                    {
+                        ConcessionariaID = viewModel.ConcessionariaID,
+                        Nome = viewModel.Nome,
+                        EnderecoCompleto = viewModel.Endereco.EnderecoCompleto,
+                        Cidade = viewModel.Endereco.Cidade,
+                        Estado = viewModel.Endereco.Estado,
+                        CEP = viewModel.Endereco.CEP,
+                        Telefone = viewModel.Telefone,
+                        Email = viewModel.Email,
+                        CapacidadeMax = viewModel.CapacidadeMax
+                    };
 
-                _concessionariasRepositorio.Atualizar(concessionaria);
-                TempData["MensagemSucesso"] = "Concessionária atualizada com sucesso!";
-                return RedirectToAction("Index");
+                    _concessionariasRepositorio.Atualizar(concessionaria);
+
+                    TempData["MensagemSucesso"] = "Concessionária atualizada com sucesso!";
+                    return RedirectToAction("Index");
+                }
+                catch (ArgumentException erro)
+                {
+                    ModelState.AddModelError(nameof(viewModel.Nome), erro.Message);
+                    return View(viewModel);
+                }
+                catch (Exception erro)
+                {
+                    TempData["MensagemErro"] = $"Erro ao criar concessiónaria: {erro.Message}";
+                    return View(viewModel);
+                }
             }
-
             return View(viewModel);
         }
 

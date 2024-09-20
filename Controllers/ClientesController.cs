@@ -85,43 +85,32 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Criar(ClientesViewModel viewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    return View(viewModel);
-                }
-
-                if (!ValidarCPF(viewModel.CPF))
-                {
-                    ModelState.AddModelError(nameof(viewModel.CPF), "O CPF informado é inválido.");
-                }
-
-                if (_clientesRepositorio.CPFExiste(viewModel.CPF))
-                {
-                    ModelState.AddModelError("CPF", "Já existe um cliente com este CPF.");
-                    return View(viewModel);
-                }
-                if (ModelState.IsValid)
-                {
-
                     var clienteModel = new ClientesModel
                     {
                         Nome = viewModel.Nome,
                         CPF = viewModel.CPF,
-                        Email = viewModel.Email,
-                        Telefone = viewModel.Telefone
+                        Telefone = viewModel.Telefone,
+                        Email = viewModel.Email
                     };
 
                     _clientesRepositorio.Adicionar(clienteModel);
-
-                    TempData["MensagemSucesso"] = "Cliente criado com sucesso!";
+                    TempData["MensagemSucesso"] = "Cliente criado com sucesso.";
                     return RedirectToAction("Index");
                 }
-            }
-            catch (Exception erro)
-            {
-                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
+                catch (ArgumentException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(viewModel);
+                }
+                catch (Exception ex)
+                {
+                    TempData["MensagemErro"] = $"Erro ao criar o cliente: {ex.Message}";
+                    return View(viewModel);
+                }
             }
 
             return View(viewModel);
@@ -130,26 +119,11 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Editar(ClientesViewModel viewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (viewModel.Nome.Length > 100)
+                try
                 {
-                    ModelState.AddModelError(nameof(viewModel.Nome), "O nome do cliente não pode exceder 100 caracteres.");
-                }
-
-                if (!ValidarCPF(viewModel.CPF))
-                {
-                    ModelState.AddModelError(nameof(viewModel.CPF), "O CPF informado é inválido.");
-                }
-
-                if (_clientesRepositorio.CPFExiste(viewModel.CPF, viewModel.ClienteID))
-                {
-                    ModelState.AddModelError(nameof(viewModel.CPF), "Já existe um cliente com este CPF.");
-                }
-
-                if (ModelState.IsValid)
-                {
-                    var cliente = new ClientesModel
+                    var clienteModel = new ClientesModel
                     {
                         ClienteID = viewModel.ClienteID,
                         Nome = viewModel.Nome,
@@ -157,18 +131,26 @@ namespace Intelectah.Controllers
                         Telefone = viewModel.Telefone,
                         Email = viewModel.Email
                     };
-                    _clientesRepositorio.Atualizar(cliente);
+
+                    _clientesRepositorio.Atualizar(clienteModel);
                     TempData["MensagemSucesso"] = "Cliente atualizado com sucesso.";
                     return RedirectToAction("Index");
                 }
-                return View(viewModel);
+                catch (ArgumentException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(viewModel);
+                }
+                catch (Exception ex)
+                {
+                    TempData["MensagemErro"] = $"Erro ao atualizar o cliente: {ex.Message}";
+                    return View(viewModel);
+                }
             }
-            catch (Exception erro)
-            {
-                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
-            }
+
             return View(viewModel);
         }
+
 
         [HttpPost]
         public IActionResult Apagar(int id)
@@ -199,45 +181,7 @@ namespace Intelectah.Controllers
             }
         }
 
-        private bool ValidarCPF(string cpf)
-        {
 
-            cpf = new string(cpf.Where(char.IsDigit).ToArray());
-
-            if (cpf.Length != 11)
-            {
-                return false;
-            }
-
-            if (cpf.All(c => c == cpf[0]))
-            {
-                return false;
-            }
-
-            int soma = 0;
-            for (int i = 0; i < 9; i++)
-            {
-                soma += (cpf[i] - '0') * (10 - i);
-            }
-            int primeiroDigito = 11 - (soma % 11);
-            primeiroDigito = (primeiroDigito >= 10) ? 0 : primeiroDigito;
-
-            if (primeiroDigito != (cpf[9] - '0'))
-            {
-                return false;
-            }
-
-            soma = 0;
-            for (int i = 0; i < 10; i++)
-            {
-                soma += (cpf[i] - '0') * (11 - i);
-            }
-            int segundoDigito = 11 - (soma % 11);
-            segundoDigito = (segundoDigito >= 10) ? 0 : segundoDigito;
-
-            return segundoDigito == (cpf[10] - '0');
-
-        }
     }
 }
 

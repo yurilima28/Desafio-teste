@@ -38,6 +38,29 @@ namespace Intelectah.Repositorio
 
         public FabricantesModel Adicionar(FabricantesModel fabricante)
         {
+            if (_bancoContext.Fabricantes.Any(f => f.NomeFabricante == fabricante.NomeFabricante && f.FabricanteID != fabricante.FabricanteID))
+            {
+                throw new ArgumentException("O nome do fabricante já existe.");
+            }
+
+            if (fabricante == null)
+            {
+                throw new ArgumentNullException(nameof(fabricante), "O fabricante não pode ser nulo.");
+            }
+
+            if (fabricante.NomeFabricante.Length > 100)
+            {
+                throw new ArgumentException("O nome do fabricante não pode exceder 100 caracteres.");
+            }
+         
+            const int AnoMinimo = 1886; 
+            int anoAtual = DateTime.Now.Year;
+
+            if (fabricante.AnoFundacao < AnoMinimo || fabricante.AnoFundacao > anoAtual)
+            {
+                throw new ArgumentException($"O ano de fundação deve ser um valor entre {AnoMinimo} e {anoAtual}.");
+            }
+
             _bancoContext.Fabricantes.Add(fabricante);
             _bancoContext.SaveChanges();
             return fabricante;
@@ -45,6 +68,16 @@ namespace Intelectah.Repositorio
 
         public FabricantesModel Atualizar(FabricantesModel fabricante)
         {
+            if (fabricante.NomeFabricante.Length > 100)
+            {
+                throw new ArgumentException("O nome do fabricante não pode exceder 100 caracteres.");
+            }
+
+            if (_bancoContext.Fabricantes.Any(f => f.NomeFabricante == fabricante.NomeFabricante && f.FabricanteID != fabricante.FabricanteID))
+            {
+                throw new ArgumentException("O nome do fabricante já existe.");
+            }
+
             _bancoContext.Fabricantes.Update(fabricante);
             _bancoContext.SaveChanges();
             return fabricante;
@@ -76,14 +109,12 @@ namespace Intelectah.Repositorio
 
         public FabricantesModel ObterPorNome(string nomeFabricante)
         {
-            return _bancoContext.Fabricantes
-                .FirstOrDefault(f => f.NomeFabricante == nomeFabricante && !f.IsDeleted);
+            return _bancoContext.Fabricantes.FirstOrDefault(f => f.NomeFabricante == nomeFabricante && !f.IsDeleted);
         }
 
         public bool VerificarNomeFabricanteUnico(string nomeFabricante, int? fabricanteID = null)
         {
-            return !_bancoContext.Fabricantes
-                .Any(f => f.NomeFabricante == nomeFabricante && f.FabricanteID != fabricanteID && !f.IsDeleted);
+            return !_bancoContext.Fabricantes.Any(f => f.NomeFabricante == nomeFabricante && f.FabricanteID != fabricanteID && !f.IsDeleted);
         }
     }
 }

@@ -3,9 +3,6 @@ using Intelectah.Models;
 using Intelectah.Repositorio;
 using Intelectah.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace Intelectah.Controllers
 {
@@ -113,24 +110,8 @@ namespace Intelectah.Controllers
             {
                 return View(viewModel);
             }
-
             try
             {
-                if (_usuariosRepositorio.EmailExiste(viewModel.Email))
-                {
-                    ModelState.AddModelError("Email", "Já existe um usuário com este email.");
-                }
-
-                if (_usuariosRepositorio.LoginExiste(viewModel.Login))
-                {
-                    ModelState.AddModelError("Login", "Já existe um usuário com este login.");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return View(viewModel);
-                }
-
                 var usuarioModel = new UsuariosModel
                 {
                     NomeUsuario = viewModel.NomeUsuario,
@@ -138,7 +119,6 @@ namespace Intelectah.Controllers
                     Login = viewModel.Login,
                     Senha = viewModel.Senha,
                     NivelAcesso = viewModel.NivelAcesso
-
                 };
 
                 _usuariosRepositorio.AdicionarUsuario(usuarioModel);
@@ -146,36 +126,27 @@ namespace Intelectah.Controllers
                 TempData["MensagemSucesso"] = "Usuário criado com sucesso!";
                 return RedirectToAction("Index");
             }
-            catch (DbUpdateException erro)
+            catch (Exception erro)
             {
-                if (erro.InnerException != null && erro.InnerException is SqlException sqlEx)
+                if (erro.Message.Contains("email"))
                 {
-                    if (sqlEx.Message.Contains("Cannot insert the value NULL into column 'Senha'"))
-                    {
-                        ModelState.AddModelError("", "O campo Senha é obrigatório.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Ocorreu um erro ao salvar o usuário. Por favor, tente novamente.");
-                    }
+                    ModelState.AddModelError("Email", "Já existe um usuário com este email.");
+                }
+                else if (erro.Message.Contains("login"))
+                {
+                    ModelState.AddModelError("Login", "Já existe um usuário com este login.");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Ocorreu um erro ao salvar o usuário. Por favor, tente novamente.");
+                    ModelState.AddModelError("", "Erro ao criar usuário: " + erro.Message);
                 }
             }
-            catch (Exception erro)
-            {
-                ModelState.AddModelError("", $"Erro inesperado: {erro.Message}");
-            }
-
             return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult Editar(UsuariosViewModel viewModel)
         {
-
             try
             {
                 var usuarioExistente = _usuariosRepositorio.ListarPorId(viewModel.UsuarioId);
@@ -183,24 +154,6 @@ namespace Intelectah.Controllers
                 {
                     TempData["MensagemErro"] = "Usuário não encontrado.";
                     return RedirectToAction("Index");
-                }
-
-                bool emailEmUso = _usuariosRepositorio.EmailExiste(viewModel.Email, viewModel.UsuarioId);
-                bool loginEmUso = _usuariosRepositorio.LoginExiste(viewModel.Login, viewModel.UsuarioId);
-
-                if (emailEmUso)
-                {
-                    ModelState.AddModelError("Email", "Já existe um usuário com este email.");
-                }
-
-                if (loginEmUso)
-                {
-                    ModelState.AddModelError("Login", "Já existe um usuário com este login.");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return View(viewModel); 
                 }
 
                 usuarioExistente.NomeUsuario = viewModel.NomeUsuario;
@@ -216,9 +169,9 @@ namespace Intelectah.Controllers
             }
             catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Erro ao editar usuário: {erro.Message}";
-                return View(viewModel); 
+                ModelState.AddModelError("", erro.Message);
             }
+            return View(viewModel);
         }
 
         [HttpPost]

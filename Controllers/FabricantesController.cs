@@ -147,6 +147,10 @@ namespace Intelectah.Controllers
                 {
                     ModelState.AddModelError(nameof(viewModel.NomeFabricante), "O nome do fabricante não pode exceder 100 caracteres.");
                 }
+                if (!_fabricantesRepositorio.VerificarNomeFabricanteUnico(viewModel.NomeFabricante))
+                {
+                    ModelState.AddModelError(nameof(viewModel.NomeFabricante), "O nome do fabricante já existe.");
+                }
 
                 if (ModelState.IsValid)
                 {

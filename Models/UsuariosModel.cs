@@ -1,4 +1,5 @@
-﻿using Intelectah.Enums;
+﻿using Desafio_teste.Criptografia;
+using Intelectah.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,7 +29,7 @@ namespace Intelectah.Models
 
         [Required(ErrorMessage = "O nível de acesso é obrigatório.")]
         public PerfilEnum NivelAcesso { get; set; }
-
+      
         public bool IsDeleted { get; set; }
 
         public UsuariosModel() { }
@@ -45,7 +46,12 @@ namespace Intelectah.Models
 
         public bool SenhaValida(string senha)
         {
-            return Senha == senha;
+            return Senha == senha.GerarHas();
+        }
+
+        public void SetSenhaHash()
+        {
+            Senha = Senha.GerarHas();
         }
     }
 }

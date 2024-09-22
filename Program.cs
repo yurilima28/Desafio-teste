@@ -1,5 +1,6 @@
 using Intelectah.Dapper;
 using Intelectah.Repositorio;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,9 @@ builder.Services.AddDbContext<BancoContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase"));
 });
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<BancoContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddScoped<IFabricantesRepositorio, FabricantesRepositorio>();
 builder.Services.AddScoped<IVeiculosRepositorio, VeiculosRepositorio>();
 builder.Services.AddScoped<IConcessionariasRepositorio, ConcessionariasRepositorio>();
@@ -33,6 +37,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

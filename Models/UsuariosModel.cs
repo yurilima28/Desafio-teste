@@ -1,7 +1,6 @@
 ﻿using Desafio_teste.Criptografia;
 using Intelectah.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Intelectah.Models
 {

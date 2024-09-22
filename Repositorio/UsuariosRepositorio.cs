@@ -56,6 +56,7 @@ namespace Intelectah.Repositorio
                 throw new Exception("Já existe um usuário com este login.");
             }
 
+            usuario.SetSenhaHash();
             _bancoContext.Usuarios.Add(usuario);
             _bancoContext.SaveChanges();
             return usuario;
@@ -75,6 +76,11 @@ namespace Intelectah.Repositorio
 
             try
             {
+                if (!string.IsNullOrEmpty(usuario.Senha))
+                {
+                    usuario.SetSenhaHash(); 
+                }
+
                 _bancoContext.Usuarios.Update(usuario);
                 _bancoContext.SaveChanges();
             }

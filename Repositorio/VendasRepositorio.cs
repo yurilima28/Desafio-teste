@@ -80,6 +80,11 @@ namespace Intelectah.Repositorio
                 throw new ArgumentException("Os dados da venda são inválidos.");
             }
 
+            if (venda.ValorTotal <= 0)
+            {
+                throw new ArgumentException("O valor da venda deve ser maior que zero.");
+            }
+
             _bancoContext.Vendas.Update(venda);
             _bancoContext.SaveChanges();
             return venda;

@@ -35,6 +35,7 @@ namespace Intelectah.Controllers
                     return View("Index");
                 }
 
+
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception erro)

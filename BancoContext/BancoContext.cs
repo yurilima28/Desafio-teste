@@ -1,13 +1,16 @@
 ﻿using Intelectah.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Intelectah.Dapper
 {
-    public class BancoContext : DbContext
+    public class BancoContext : IdentityDbContext<IdentityUser>
     {
         public BancoContext(DbContextOptions<BancoContext> options) : base(options)
         {
         }
+
         public DbSet<FabricantesModel> Fabricantes { get; set; }
         public DbSet<VeiculosModel> Veiculos { get; set; }
         public DbSet<ConcessionariasModel> Concessionarias { get; set; }
@@ -17,11 +20,13 @@ namespace Intelectah.Dapper
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); 
+
             modelBuilder.Entity<VeiculosModel>()
-        .HasOne(v => v.Fabricante)
-        .WithMany(f => f.Veiculos)
-        .HasForeignKey(v => v.FabricanteID)
-        .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(v => v.Fabricante)
+                .WithMany(f => f.Veiculos)
+                .HasForeignKey(v => v.FabricanteID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<VendasModel>()
                 .HasOne(v => v.Veiculo)
@@ -40,6 +45,7 @@ namespace Intelectah.Dapper
                 .WithMany()
                 .HasForeignKey(v => v.UsuarioID)
                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<VendasModel>()
                 .HasOne(v => v.Concessionaria)
                 .WithMany()
@@ -55,8 +61,6 @@ namespace Intelectah.Dapper
             modelBuilder.Entity<UsuariosModel>()
                 .Property(u => u.NivelAcesso)
                 .HasConversion<int>();
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

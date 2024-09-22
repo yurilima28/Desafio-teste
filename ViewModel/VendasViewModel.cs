@@ -1,16 +1,22 @@
-﻿using Intelectah.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Intelectah.ViewModel
 {
     public class VendasViewModel
     {
         public int VendaId { get; set; }
+        [Required(ErrorMessage ="Nome do clinte é obrigatório")]
         public int ClienteID { get; set; }
         public DateTime DataVenda { get; set; } = DateTime.Now;
+        [Required(ErrorMessage = "O valor da venda é obrigatório")]
         public decimal ValorTotal { get; set; }
+        [Required(ErrorMessage = "Nome do vendedor é obrigatório")]
         public int UsuarioID { get; set; }
+        [Required(ErrorMessage = "Nome da concessionária é obrigatório")]
         public int ConcessionariaID { get; set; }
+        [Required(ErrorMessage = "Nome do fabricante é obrigatório")]
         public int FabricanteID { get; set; }
+        [Required(ErrorMessage = "Modelo do veículo é obrigatório")]
         public int VeiculoID { get; set; }
         public string ProtocoloVenda { get; set; }
         public bool IsDeleted { get; set; }

@@ -53,17 +53,17 @@ namespace Intelectah.Controllers
             {
                 VendaId = v.VendaId,
                 ClienteID = v.ClienteID,
-                NomeCliente = v.Cliente.Nome,
+                NomeCliente = v.Cliente?.Nome,
                 DataVenda = v.DataVenda,
                 ValorTotal = v.ValorTotal,
                 UsuarioID = v.UsuarioID,
-                NomeUsario = v.Usuario.NomeUsuario,
+                NomeUsario = v.Usuario?.NomeUsuario,
                 ConcessionariaID = v.ConcessionariaID,
-                NomeConcessionaria = v.Concessionaria.Nome,
+                NomeConcessionaria = v.Concessionaria?.Nome,
                 FabricanteID = v.FabricanteID,
-                NomeFabricante = v.Fabricante.NomeFabricante,
+                NomeFabricante = v.Fabricante?.NomeFabricante,
                 VeiculoID = v.VeiculoID,
-                NomeVeiculo = v.Veiculo.ModeloVeiculo,
+                NomeVeiculo = v.Veiculo?.ModeloVeiculo,
                 ProtocoloVenda = v.ProtocoloVenda
             });
 
@@ -133,49 +133,59 @@ namespace Intelectah.Controllers
         [HttpPost]
         public IActionResult Criar(VendasViewModel vendasViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                vendasViewModel.ProtocoloVenda = GerarProtocoloVenda();
+
+                if (vendasViewModel.ProtocoloVenda == null)
                 {
-                    vendasViewModel.ProtocoloVenda = GerarProtocoloVenda();
-                    if (vendasViewModel.ProtocoloVenda == null)
-                    {
-                        throw new Exception("Não foi possível gerar o protocolo de venda.");
-                    }
-                    var vendaModel = MapearParaModel(vendasViewModel);
-                    _vendasRepositorio.Adicionar(vendaModel);
-                    return RedirectToAction("Index");
+                    throw new Exception("Não foi possível gerar o protocolo de venda.");
                 }
-                catch (Exception ex)
-                {
-                    ViewBag.ErrorMessage = $"Erro ao salvar a venda: {ex.Message}";
-                    PrepararDadosDropdowns(vendasViewModel);
-                    return View(vendasViewModel);
-                }
+
+                var vendaModel = MapearParaModel(vendasViewModel);
+
+                _vendasRepositorio.Adicionar(vendaModel);
+
+                return RedirectToAction("Index");
             }
-            PrepararDadosDropdowns(vendasViewModel);
-            return View(vendasViewModel);
+            catch (ArgumentException ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+                PrepararDadosDropdowns(vendasViewModel);
+                return View(vendasViewModel);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = $"Erro ao salvar a venda: {ex.Message}";
+                PrepararDadosDropdowns(vendasViewModel);
+                return View(vendasViewModel);
+            }
         }
 
         [HttpPost]
         public IActionResult Editar(VendasViewModel vendasViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    var vendaModel = MapearParaModel(vendasViewModel);
-                    _vendasRepositorio.Atualizar(vendaModel);
-                    TempData["MensagemSucesso"] = "Venda atualizada com sucesso!";
-                    return RedirectToAction("Index");
-                }
-                catch (Exception erro)
-                {
-                    TempData["MensagemErro"] = "Ocorreu um erro ao atualizar a venda. Por favor, tente novamente.";
-                }
+                var vendaModel = MapearParaModel(vendasViewModel);
+
+                _vendasRepositorio.Atualizar(vendaModel);
+
+                TempData["MensagemSucesso"] = "Venda atualizada com sucesso!";
+                return RedirectToAction("Index");
             }
-            PrepararDadosDropdowns(vendasViewModel);
-            return View(vendasViewModel);
+            catch (ArgumentException ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+                PrepararDadosDropdowns(vendasViewModel);
+                return View(vendasViewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["MensagemErro"] = $"Ocorreu um erro ao atualizar a venda: {ex.Message}";
+                PrepararDadosDropdowns(vendasViewModel);
+                return View(vendasViewModel);
+            }
         }
 
         [HttpPost]

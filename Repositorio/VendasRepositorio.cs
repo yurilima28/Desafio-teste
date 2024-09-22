@@ -22,13 +22,20 @@ namespace Intelectah.Repositorio
                 query = query.Where(v => !v.IsDeleted);
             }
 
-            return query
+            var venda = query
                 .Include(v => v.Cliente)
                 .Include(v => v.Usuario)
                 .Include(v => v.Concessionaria)
                 .Include(v => v.Fabricante)
                 .Include(v => v.Veiculo)
                 .FirstOrDefault(v => v.VendaId == id);
+
+            if (venda == null)
+            {
+                throw new ArgumentException($"Venda com ID {id} não encontrada.");
+            }
+
+            return venda;
         }
 
         public List<VendasModel> BuscarTodos(bool incluirExcluidos = false)
@@ -51,6 +58,16 @@ namespace Intelectah.Repositorio
 
         public VendasModel Adicionar(VendasModel venda)
         {
+            if (venda == null)
+            {
+                throw new ArgumentException("Os dados da venda são inválidos.");
+            }
+
+            if (string.IsNullOrWhiteSpace(venda.ProtocoloVenda))
+            {
+                throw new ArgumentException("O protocolo de venda é obrigatório.");
+            }
+
             _bancoContext.Vendas.Add(venda);
             _bancoContext.SaveChanges();
             return venda;
@@ -58,6 +75,11 @@ namespace Intelectah.Repositorio
 
         public VendasModel Atualizar(VendasModel venda)
         {
+            if (venda == null)
+            {
+                throw new ArgumentException("Os dados da venda são inválidos.");
+            }
+
             _bancoContext.Vendas.Update(venda);
             _bancoContext.SaveChanges();
             return venda;
